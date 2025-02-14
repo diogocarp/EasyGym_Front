@@ -11,17 +11,16 @@ const HomePage = () => {
     return (
         <Home.Container>
             <Header />
-
             <Home.Section>
                 <Home.AboutImage src={home_bg_one} />
-                <Home.AboutSection>
+                <Home.AboutSection id="about">
                     <Home.Title>Sobre Nós</Home.Title>
                     <Home.Text>Na Easy Gym, acreditamos que o fitness deve ser acessível, divertido e descomplicado para todos. Nossa academia é equipada com aparelhos modernos, aulas dinâmicas e um ambiente acolhedor para motivar você a alcançar suas metas.</Home.Text>
 
                     <Home.Text>Com planos flexíveis e uma equipe de profissionais dedicados, estamos aqui para tornar sua jornada fitness fácil e prazerosa. Venha fazer parte da nossa comunidade e descubra o poder de se sentir bem!</Home.Text>
                 </Home.AboutSection>
             </Home.Section>
-            <Home.PlansSection>
+            <Home.PlansSection id="plans">
                 {plans.map((plan) => (
                     <Home.PlanCard key={plan.id}>
                         <Home.Title>Plano {plan.title}</Home.Title>
@@ -45,8 +44,8 @@ const HomePage = () => {
                 ))}
             </Home.PlansSection>
             <Home.Section>
-                <Home.AboutSection style={{ position: "relative" }}></Home.AboutSection>
-                <Home.ContactSection>
+                <Home.AboutSection style={{ position: "relative", border:"none", backgroundColor:'#1a1a1a', background:"none",}}></Home.AboutSection>
+                <Home.ContactSection id="contact">
                     <Home.Title>Contato</Home.Title>
                     <Home.Text>Quer saber mais sobre nossos planos ou agendar uma visita? Nossa equipe está pronta para ajudar você!</Home.Text>
 
