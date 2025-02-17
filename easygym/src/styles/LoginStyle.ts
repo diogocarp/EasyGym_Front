@@ -63,17 +63,30 @@ const InputContainer = styled.div`
 `;
 
 const Input = styled.input`
+ width:100%;
   border: none;
   background: none;
   outline: none;
   flex: 1;
   padding-left: 10px;
-  color: white;
-  font-size: 16px;
+  font-size: 14px;
+  color:white;
 
-  &::placeholder {
-    color: #bbb;
-  }
+    &::-webkit-datetime-edit {
+        color: gray;
+    }
+
+    &::-moz-placeholder {
+        color: gray; 
+    }
+
+    &::-ms-input-placeholder {
+        color: gray; 
+    }
+
+    &::-webkit-calendar-picker-indicator {
+    filter: invert(1); 
+    }
 `;
 
 const Options = styled.div`

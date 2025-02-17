@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import MaskedInput from "react-text-mask";
+import { IMaskInput } from "react-imask";
 
 
 const Form = styled.form`
@@ -34,9 +34,8 @@ const InputContainer = styled.div`
    
 `;
 
-
-
-const CustomMaskedInput = styled(MaskedInput)`
+const CustomMaskedInput = styled(IMaskInput)`
+  width:100%;
   border: none;
   background: none;
   outline: none;
@@ -66,6 +65,7 @@ const CustomMaskedInput = styled(MaskedInput)`
 `;
 
 const Input = styled.input`
+  width:100%;
   border: none;
   background: none;
   outline: none;
@@ -100,4 +100,4 @@ const FullWidth = styled.div`
   }
 `;
 
-export { Form, Input, InputContainer, FullWidth, CustomMaskedInput }
+export { Form, Input, InputContainer, FullWidth,CustomMaskedInput }
