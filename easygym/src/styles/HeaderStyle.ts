@@ -5,7 +5,7 @@ interface SidebarProps {
   isOpen:boolean;
 }
 
-export const Container = styled.header`
+ const Container = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,12 +13,12 @@ export const Container = styled.header`
   border-bottom: 2px solid #fff;
 `;
 
-export const Logo = styled.img`
+ const Logo = styled.img`
   cursor: pointer;
   width: 50%;
 `;
 
-export const LogoContainer = styled.div`
+ const LogoContainer = styled.div`
   background-color: #4D4B4D;
   width: 200px;
   display: flex;
@@ -27,7 +27,7 @@ export const LogoContainer = styled.div`
   padding: 10px;
 `;
 
-export const Nav = styled.nav`
+ const Nav = styled.nav`
   display: flex;
   gap: 40px;
   align-items: center;
@@ -37,7 +37,7 @@ export const Nav = styled.nav`
   }
 `;
 
-export const NavLink = styled.a`
+ const NavLink = styled.a`
   color: white;
   text-decoration: none;
   &:hover {
@@ -45,7 +45,7 @@ export const NavLink = styled.a`
   }
 `;
 
-export const Button = styled.button`
+const Button = styled.button`
   width: 160px;
   height: 45px;
   color: white;
@@ -60,7 +60,7 @@ export const Button = styled.button`
   }
 `;
 
-export const MenuIcon = styled.div`
+const HeaderMenuIcon = styled.div`
   display: none; 
   color: white;
   font-size: 24px;
@@ -71,7 +71,7 @@ export const MenuIcon = styled.div`
   }
 `;
 
-export const Sidebar = styled.div<SidebarProps>`
+const Sidebar = styled.div<SidebarProps>`
   display: none; 
   flex-direction: column;
   gap: 20px;
@@ -91,3 +91,5 @@ export const Sidebar = styled.div<SidebarProps>`
     display: flex; 
   }
 `;
+
+export {Button,Container,HeaderMenuIcon,Logo,LogoContainer,Nav,NavLink,Sidebar}

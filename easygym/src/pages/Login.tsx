@@ -1,6 +1,6 @@
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import * as Login from "../styles/LoginStyle";
+import {Button,Card,Checkbox,Container,Input,InputContainer,Link,Logo,Options,Section} from "../styles/LoginStyle";
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import logo from '../assets/img/home-assets/logo-quadrado-v2.png';
@@ -44,40 +44,40 @@ const LoginPage = () => {
     return (
         <>
             <Header />
-            <Login.Section>
-                <Login.Container>
-                    <Login.Card>
-                        <Login.Logo src={logo} />
+            <Section>
+                <Container>
+                    <Card>
+                        <Logo src={logo} />
                         <p style={{ color: "white", marginBottom: 20, fontSize: 22 }}>Bem-vindo Novamente!</p>
 
-                        <Login.Options style={{ margin: "20px 60px" }}>
+                        <Options style={{ margin: "20px 60px" }}>
                             <span>Primeira vez por aqui?</span>
-                            <Login.Link onClick={() => navigate("/register")}>
+                            <Link onClick={() => navigate("/register")}>
                                 Cadastre-se
-                            </Login.Link>
-                        </Login.Options>
+                            </Link>
+                        </Options>
 
-                        <Login.InputContainer>
+                        <InputContainer>
                             <PersonIcon />
-                            <Login.Input type="text" placeholder="Digite seu email ou CPF" onChange={(e) => setEmail(e.target.value)} />
-                        </Login.InputContainer>
+                            <Input type="text" placeholder="Digite seu email ou CPF" onChange={(e) => setEmail(e.target.value)} />
+                        </InputContainer>
 
-                        <Login.InputContainer>
+                        <InputContainer>
                             <LockIcon />
-                            <Login.Input type="password" placeholder="Digite sua senha" onChange={(e) => setPassword(e.target.value)} />
-                        </Login.InputContainer>
+                            <Input type="password" placeholder="Digite sua senha" onChange={(e) => setPassword(e.target.value)} />
+                        </InputContainer>
 
-                        <Login.Options>
+                        <Options>
                             <label>
-                                <Login.Checkbox type="checkbox" /> Lembrar-me
+                                <Checkbox type="checkbox" /> Lembrar-me
                             </label>
-                            <Login.Link>Esqueceu a senha?</Login.Link>
-                        </Login.Options>
+                            <Link>Esqueceu a senha?</Link>
+                        </Options>
 
-                        <Login.Button onClick={() => handleLogin()}>Logar</Login.Button>
-                    </Login.Card>
-                </Login.Container>
-            </Login.Section>
+                        <Button onClick={() => handleLogin()}>Logar</Button>
+                    </Card>
+                </Container>
+            </Section>
             <Footer />
 
             <ToastContainer />

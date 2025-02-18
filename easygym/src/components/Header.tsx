@@ -1,5 +1,5 @@
 import  { useState } from "react";
-import * as HeaderS from "../styles/HeaderStyle";
+import {Button,Container,Logo,LogoContainer,HeaderMenuIcon,Nav,NavLink,Sidebar} from "../styles/HeaderStyle";
 import logo from '../assets/img/home-assets/logo-quadrado-v2.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -27,29 +27,29 @@ const Header = () => {
     
 
     return (
-        <HeaderS.Container>
-            <HeaderS.LogoContainer>
-                <HeaderS.Logo src={logo} onClick={()=>navigate("/")}/>
-            </HeaderS.LogoContainer>
+        <Container>
+            <LogoContainer>
+                <Logo src={logo} onClick={()=>navigate("/")}/>
+            </LogoContainer>
 
-            <HeaderS.MenuIcon onClick={toggleMenu}>
+            <HeaderMenuIcon onClick={toggleMenu}>
                 {isMenuOpen ? <CloseIcon style={{marginRight:40}}/> : <MenuIcon style={{marginRight:40}}/>}
-            </HeaderS.MenuIcon>
+            </HeaderMenuIcon>
 
-            <HeaderS.Nav>
-                <HeaderS.NavLink href="#about" onClick={(e) => smoothScroll(e, "about")}>Sobre Nós</HeaderS.NavLink>
-                <HeaderS.NavLink href="#plans" onClick={(e) => smoothScroll(e, "plans")}>Planos</HeaderS.NavLink>
-                <HeaderS.NavLink href="#contact" onClick={(e) => smoothScroll(e, "contact")}>Contato</HeaderS.NavLink>
-                <HeaderS.Button onClick={() => isLogged  ? navigate("/login") : navigate("/client")}>Área do Cliente</HeaderS.Button>
-            </HeaderS.Nav>
+            <Nav>
+                <NavLink href="#about" onClick={(e) => smoothScroll(e, "about")}>Sobre Nós</NavLink>
+                <NavLink href="#plans" onClick={(e) => smoothScroll(e, "plans")}>Planos</NavLink>
+                <NavLink href="#contact" onClick={(e) => smoothScroll(e, "contact")}>Contato</NavLink>
+                <Button onClick={() => isLogged  ? navigate("/login") : navigate("/client")}>Área do Cliente</Button>
+            </Nav>
 
-            <HeaderS.Sidebar isOpen={isMenuOpen}>
-                <HeaderS.NavLink href="#about" onClick={(e) => smoothScroll(e, "about")}>Sobre Nós</HeaderS.NavLink>
-                <HeaderS.NavLink href="#plans" onClick={(e) => smoothScroll(e, "plans")}>Planos</HeaderS.NavLink>
-                <HeaderS.NavLink href="#contact" onClick={(e) => smoothScroll(e, "contact")}>Contato</HeaderS.NavLink>
-                <HeaderS.Button onClick={() => isLogged  ? navigate("/login") : navigate("/client")}>Área do Cliente</HeaderS.Button>
-            </HeaderS.Sidebar>
-        </HeaderS.Container>
+            <Sidebar isOpen={isMenuOpen}>
+                <NavLink href="#about" onClick={(e) => smoothScroll(e, "about")}>Sobre Nós</NavLink>
+                <NavLink href="#plans" onClick={(e) => smoothScroll(e, "plans")}>Planos</NavLink>
+                <NavLink href="#contact" onClick={(e) => smoothScroll(e, "contact")}>Contato</NavLink>
+                <Button onClick={() => isLogged  ? navigate("/login") : navigate("/client")}>Área do Cliente</Button>
+            </Sidebar>
+        </Container>
     );
 };
 

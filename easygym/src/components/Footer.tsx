@@ -1,13 +1,13 @@
 
-import * as FooterS from "../styles/FooterStyle";
+import {Container}  from "../styles/FooterStyle";
 
 
 const Footer = () => {
     return (
 
-        <FooterS.Container>
+        <Container>
             EasyGym © 2024
-        </FooterS.Container>
+        </Container>
 
     )
 }
