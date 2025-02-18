@@ -21,7 +21,7 @@ import { toast, ToastContainer } from "react-toastify";
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 500);
-    const [user, setUser] = useState(new User("", "", new Date(), "", "", ""));
+    const [user] = useState(new User("", "", new Date(), "", "", ""));
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isPasswordValid, setIsPasswordValid] = useState(false);
     const [isEmailValid, setIsEmailValid] = useState(false);
