@@ -35,7 +35,7 @@ const RegisterPage = () => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const validateInput: ValidateInputType = (value, setter, validator, pattern) => {
+    const validateInput: ValidateInputType = (value:any, setter, validator, pattern) => {
         setter(value);
         validator(pattern.test(value));
     };
@@ -171,7 +171,7 @@ const RegisterPage = () => {
                                         mask="000.000.000-00"
                                         unmask={true}
                                         placeholder="CPF"
-                                        onChange={(e) => validateInput(e.target.value, () => user.setCpf(e.target.value), setIsCpfValid, regexPatterns.cpfPattern)}
+                                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setCpf(e.target.value), setIsCpfValid, regexPatterns.cpfPattern)}
                                     />
                                     {isCpfValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
                                 </Register.InputContainer>
@@ -181,7 +181,7 @@ const RegisterPage = () => {
                                         mask="(00) 00000-0000"
                                         unmask={true}
                                         placeholder="Telefone"
-                                        onChange={(e) => validateInput(e.target.value, () => user.setTel(e.target.value), setIsTelValid, regexPatterns.phonePattern)}
+                                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setTel(e.target.value), setIsTelValid, regexPatterns.phonePattern)}
                                     />
                                     {isTelValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
                                 </Register.InputContainer>
@@ -189,7 +189,7 @@ const RegisterPage = () => {
                                     <CalendarMonthIcon />
                                     <Register.Input
                                         type="date"
-                                         onChange={(e) => validateInput(e.target.value, () => user.setBirth(e.target.value), setIsDateValid, regexPatterns.datePattern)}
+                                         onChange={(e:React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setBirth(new Date(e.target.value)), setIsDateValid, regexPatterns.datePattern)}
                                     />
                                     {isDateValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
                                 </Register.InputContainer>
