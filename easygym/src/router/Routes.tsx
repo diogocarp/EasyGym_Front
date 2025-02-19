@@ -2,13 +2,16 @@ import { Navigate, Route, createBrowserRouter, createRoutesFromElements, useLoca
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import ResetPassword from '../pages/ResetPassword';
+import ConfirmedRegister from '../pages/ConfirmRegister';
 
 const routesConfig = [
 
   { path: '/home', element: <Home /> },
   { path: '/login', element: <Login /> },
-  { path: '/register', element: <Register /> }
-
+  { path: '/register', element: <Register /> },
+  { path: '/reset', element: <ResetPassword /> },
+  { path: '/confirmed', element: <ConfirmedRegister /> }
 ];
 
 const RootRoute = () => {

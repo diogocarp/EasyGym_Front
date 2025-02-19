@@ -17,7 +17,6 @@ import { ValidateInputType, regexPatterns } from "./constants/MaskConstants";
 import User from "../models/User";
 import { toast, ToastContainer } from "react-toastify";
 
-
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 500);
@@ -115,7 +114,7 @@ const RegisterPage = () => {
         
         toast.success("Cadastro realizado com sucesso!", {
             position: "bottom-right",
-            autoClose: 5000,
+            autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,

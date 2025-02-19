@@ -1,6 +1,6 @@
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import {Button,Card,Checkbox,Container,Input,InputContainer,Link,Logo,Options,Section} from "../styles/LoginStyle";
+import { Button, Card, Checkbox, Container, Input, InputContainer, Link, Logo, Options, Section } from "../styles/LoginStyle";
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import logo from '../assets/img/home-assets/logo-quadrado-v2.png';
@@ -10,23 +10,23 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useState } from "react";
 
 const LoginPage = () => {
+    
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-
     const handleLogin = () => {
-
 
         if (email && password) {
             toast.success("Login realizado com sucesso!", {
                 position: "bottom-right",
-                autoClose: 5000,
+                autoClose: 2500,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                style:{backgroundColor:"#444",color:"white"}
+                style: { backgroundColor: "#444", color: "white" },
+                onClose: () => navigate("/home")
             });
         } else {
             toast.error("Por favor, insira dados válidos.", {
@@ -36,7 +36,7 @@ const LoginPage = () => {
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                style:{backgroundColor:"#444",color:"white"}
+                style: { backgroundColor: "#444", color: "white" }
             });
         }
     };
@@ -71,7 +71,7 @@ const LoginPage = () => {
                             <label>
                                 <Checkbox type="checkbox" /> Lembrar-me
                             </label>
-                            <Link>Esqueceu a senha?</Link>
+                            <Link onClick={() => navigate("/reset")}>Esqueceu a senha?</Link>
                         </Options>
 
                         <Button onClick={() => handleLogin()}>Logar</Button>
