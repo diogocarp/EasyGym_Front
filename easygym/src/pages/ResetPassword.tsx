@@ -11,7 +11,6 @@ import { Email } from "@mui/icons-material";
 const ResetPasswordPage = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
 
     const handleLogin = () => {
 

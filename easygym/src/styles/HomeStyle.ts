@@ -3,6 +3,7 @@ import styled from "styled-components";
 const Container = styled.div`
   background-color: #1a1a1a;
   color: white;
+  
 `;
 
 const PlansSection = styled.section`
@@ -10,6 +11,7 @@ const PlansSection = styled.section`
   justify-content: center;
   gap: 2px;
   padding: 40px;
+  
 
   @media (max-width: 1000px) {
     flex-direction: column;
@@ -60,12 +62,16 @@ const PlanListItem = styled.li`
   padding: 5px;
   margin-top: 15px;
   margin-bottom: 15px;
-  
+  align-items:center;
+  justify-content:left;
+  display:flex;
+  color:white;
   
 `;
 
 const Icon = styled.img`
   width: 20px;
+  margin-right: 10px;
 `;
 
 const AboutSection = styled.div`

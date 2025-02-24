@@ -6,12 +6,6 @@ import {
     AboutSection,
     Title,
     Text,
-    PlansSection,
-    PlanCard,
-    PlanList,
-    PlanListItem,
-    Icon,
-    Button,
     ContactSection,
     ContactImage
   } from "../styles/HomeStyle";
@@ -19,8 +13,9 @@ import email from "../assets/img/home-assets/email-white.png"
 import tel from "../assets/img/home-assets/telephone.png"
 import home_bg_one from "../assets/img/home-assets/home-section-1.png"
 import home_bg_two from "../assets/img/home-assets/home-section-2.png"
-import { plans } from "./constants/HomeContants";
+
 import Footer from "../components/Footer";
+import Plans from "../components/home/Plans";
 
 const HomePage = () => {
     return (
@@ -35,29 +30,7 @@ const HomePage = () => {
                     <Text>Com planos flexíveis e uma equipe de profissionais dedicados, estamos aqui para tornar sua jornada fitness fácil e prazerosa. Venha fazer parte da nossa comunidade e descubra o poder de se sentir bem!</Text>
                 </AboutSection>
             </Section>
-            <PlansSection id="plans">
-                {plans.map((plan) => (
-                    <PlanCard key={plan.id}>
-                        <Title>Plano {plan.title}</Title>
-                        <PlanList>
-                            <PlanListItem>
-                                <Icon src={plan.advantages[0]} /> Acesso à sauna e spa
-                            </PlanListItem>
-                            <PlanListItem>
-                                <Icon src={plan.advantages[1]} /> Consultas com Nutricionista
-                            </PlanListItem>
-                            <PlanListItem>
-                                <Icon src={plan.advantages[2]} />  Personal Trainer
-                            </PlanListItem>
-                            <PlanListItem>
-                                <Icon src={plan.advantages[3]} />  Área de musculação e cardio
-                            </PlanListItem>
-                            <center><p style={{ color: "#ccc", marginBottom: 10, fontSize: 12, fontStyle: "italic" }}>{plan.fidelity}</p></center>
-                        </PlanList>
-                        <Button>Quero esse!</Button>
-                    </PlanCard>
-                ))}
-            </PlansSection>
+            <Plans/>
             <Section>
                 <AboutSection style={{ position: "relative", border:"none", backgroundColor:'#1a1a1a', background:"none",}}></AboutSection>
                 <ContactSection id="contact">

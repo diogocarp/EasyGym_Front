@@ -6,7 +6,6 @@ import confirmed from '../assets/img/home-assets/confirmed.png';
 import {  ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 const ConfirmedRegister = () => {
     
     return (

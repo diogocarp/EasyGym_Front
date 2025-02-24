@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
+import User from "../models/User";
 
 const api = axios.create({
   baseURL: "https://api.exemplo.com",
@@ -10,7 +11,6 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -29,5 +29,16 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+
+
+export function postUser(api: AxiosInstance, user: User) {
+  try {
+      api.post("localhost:8080/users", user).then()
+  } catch (e) {
+      console.log(e)
+  }
+}
+
 
 export default api;

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import {Button,Card,Container,Link,Logo,Options,Section} from "../styles/LoginStyle";
-import {CustomMaskedInput,Form,FullWidth,Input,InputContainer} from "../styles/RegisterStyle"
+import { Button, Card, Container, Link, Logo, Options, Section } from "../styles/LoginStyle";
+import { CustomMaskedInput, Form, FullWidth, Input, InputContainer } from "../styles/RegisterStyle"
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
@@ -16,6 +16,7 @@ import { Close } from "@mui/icons-material";
 import { ValidateInputType, regexPatterns } from "./constants/MaskConstants";
 import User from "../models/User";
 import { toast, ToastContainer } from "react-toastify";
+import api, { postUser } from "../api/Api";
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -34,22 +35,22 @@ const RegisterPage = () => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const validateInput: ValidateInputType = (value:any, setter, validator, pattern) => {
+    const validateInput: ValidateInputType = (value: any, setter, validator, pattern) => {
         setter(value);
         validator(pattern.test(value));
     };
 
-    const handlePass = (value:string) => {
+    const handlePass = (value: string) => {
         if (user.getPassword() !== value || user.getPassword() == "" || confirmPassword == "") {
             setIsPasswordValid(false);
         } else {
-            setIsPasswordValid(true); 
-            
+            setIsPasswordValid(true);
+
         }
         setConfirmPassword(value);
-        
+
     };
-    
+
     const handleRegister = () => {
         if (!isEmailValid) {
             toast.error("Por favor, insira um e-mail válido.", {
@@ -59,7 +60,7 @@ const RegisterPage = () => {
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                style:{backgroundColor:"#444",color:"white"}
+                style: { backgroundColor: "#444", color: "white" }
             });
             return;
         }
@@ -71,7 +72,7 @@ const RegisterPage = () => {
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                style:{backgroundColor:"#444",color:"white"}
+                style: { backgroundColor: "#444", color: "white" }
             });
             return;
         }
@@ -83,7 +84,7 @@ const RegisterPage = () => {
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                style:{backgroundColor:"#444",color:"white"}
+                style: { backgroundColor: "#444", color: "white" }
             });
             return;
         }
@@ -95,7 +96,7 @@ const RegisterPage = () => {
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                style:{backgroundColor:"#444",color:"white"}
+                style: { backgroundColor: "#444", color: "white" }
             });
             return;
         }
@@ -107,11 +108,17 @@ const RegisterPage = () => {
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                style:{backgroundColor:"#444",color:"white"}
+                style: { backgroundColor: "#444", color: "white" }
             });
             return;
         }
-        
+
+        try{
+            postUser(api, user);
+        }catch(e){
+            console.log(e)
+        }
+
         toast.success("Cadastro realizado com sucesso!", {
             position: "bottom-right",
             autoClose: 3000,
@@ -119,7 +126,7 @@ const RegisterPage = () => {
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-            style:{backgroundColor:"#444",color:"white"},
+            style: { backgroundColor: "#444", color: "white" },
             onClose: () => navigate("/login")
         });
         console.log(user.toString())
@@ -157,7 +164,7 @@ const RegisterPage = () => {
                                     <Input
                                         type="email"
                                         placeholder="Email"
-                                         onChange={(e) => validateInput(e.target.value, () => user.setEmail(e.target.value), setIsEmailValid, regexPatterns.emailPattern)}
+                                        onChange={(e) => validateInput(e.target.value, () => user.setEmail(e.target.value), setIsEmailValid, regexPatterns.emailPattern)}
                                     />
                                     {isEmailValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
                                 </InputContainer>
@@ -170,7 +177,7 @@ const RegisterPage = () => {
                                         mask="000.000.000-00"
                                         unmask={true}
                                         placeholder="CPF"
-                                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setCpf(e.target.value), setIsCpfValid, regexPatterns.cpfPattern)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setCpf(e.target.value), setIsCpfValid, regexPatterns.cpfPattern)}
                                     />
                                     {isCpfValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
                                 </InputContainer>
@@ -180,7 +187,7 @@ const RegisterPage = () => {
                                         mask="(00) 00000-0000"
                                         unmask={true}
                                         placeholder="Telefone"
-                                        onChange={(e:React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setTel(e.target.value), setIsTelValid, regexPatterns.phonePattern)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setTel(e.target.value), setIsTelValid, regexPatterns.phonePattern)}
                                     />
                                     {isTelValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
                                 </InputContainer>
@@ -188,7 +195,7 @@ const RegisterPage = () => {
                                     <CalendarMonthIcon />
                                     <Input
                                         type="date"
-                                         onChange={(e:React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setBirth(new Date(e.target.value)), setIsDateValid, regexPatterns.datePattern)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setBirth(new Date(e.target.value)), setIsDateValid, regexPatterns.datePattern)}
                                     />
                                     {isDateValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
                                 </InputContainer>
@@ -200,8 +207,8 @@ const RegisterPage = () => {
                                     <Input
                                         type="password"
                                         placeholder="Senha"
-                                        
-                                     onChange={(e) => user.setPassword(e.target.value)}
+
+                                        onChange={(e) => user.setPassword(e.target.value)}
                                     />
                                 </InputContainer>
                                 <InputContainer style={{ marginTop: isMobile ? "10px" : "", marginLeft: isMobile ? "" : "10px" }}>

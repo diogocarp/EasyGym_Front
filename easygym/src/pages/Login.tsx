@@ -26,7 +26,7 @@ const LoginPage = () => {
                 pauseOnHover: true,
                 draggable: true,
                 style: { backgroundColor: "#444", color: "white" },
-                onClose: () => navigate("/home")
+                onClose: () => navigate("/manager")
             });
         } else {
             toast.error("Por favor, insira dados válidos.", {
