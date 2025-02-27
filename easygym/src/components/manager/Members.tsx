@@ -22,9 +22,9 @@ const Members = () => {
         { name: "Letícia Cláudia Campos", cpf: "123.456.789-09" }
     ];
 
-    const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    //const navigate = useNavigate();
+    const [, setEmail] = useState("");
+    const [, setPassword] = useState("");
 
     return (
         <div style={{ display: "flex" }}>
