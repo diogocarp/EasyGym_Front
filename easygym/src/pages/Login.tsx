@@ -26,7 +26,7 @@ const LoginPage = () => {
                 pauseOnHover: true,
                 draggable: true,
                 style: { backgroundColor: "#444", color: "white" },
-                onClose: () => navigate("/manager")
+                onClose: () => navigate("/member")
             });
         } else {
             toast.error("Por favor, insira dados válidos.", {
@@ -77,7 +77,9 @@ const LoginPage = () => {
                         <Button onClick={() => handleLogin()}>Logar</Button>
                     </Card>
                 </Container>
+            <Button style={{width:"200px", marginLeft:"20px"}} onClick={() => navigate("/manager")}>Logar</Button>
             </Section>
+            
             <Footer />
 
             <ToastContainer />

@@ -4,11 +4,11 @@ import PlansSection from "../home/Plans";
 const Plans = () => {
     return (
         <div style={{display:"flex"}}>
-        <Container style={{ width: "30%" }}>
+        <Container style={{ width: "25%" }}>
         </Container>
-        <Container style={{ width: "90%", height:"100vh" }}>
+        <Container style={{ width: "90%"}}>
             <Frequency>
-                <GymIcon fontSize="large" /><Title>Meu Plano</Title>
+                <GymIcon fontSize="large" /><Title>Planos</Title>
             </Frequency>
             <PlansSection/>
         </Container>

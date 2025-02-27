@@ -4,7 +4,8 @@ import { FitnessCenter, MonetizationOnOutlined } from "@mui/icons-material";
 
 const Container = styled.div`
   background-color:#252525;
-`;
+  height:120vh;
+`
 
 const GymIcon = styled(FitnessCenter)`
     color:white;
