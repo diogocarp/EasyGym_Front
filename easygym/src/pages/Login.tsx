@@ -75,9 +75,11 @@ const LoginPage = () => {
                         </Options>
 
                         <Button onClick={() => handleLogin()}>Logar</Button>
+                        <Button style={{width:"200px", marginLeft:"20px",marginTop:"50px"}} onClick={() => navigate("/manager")}>Logar como Operador</Button>
                     </Card>
+                    
                 </Container>
-            <Button style={{width:"200px", marginLeft:"20px"}} onClick={() => navigate("/manager")}>Logar</Button>
+            
             </Section>
             
             <Footer />

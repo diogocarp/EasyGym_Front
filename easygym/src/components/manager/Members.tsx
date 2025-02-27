@@ -7,7 +7,6 @@ import PersonIcon from '@mui/icons-material/Person';
 import { FileCopy } from "@mui/icons-material";
 import { useState } from "react";
 
-
 const Members = () => {
 
     const students = [

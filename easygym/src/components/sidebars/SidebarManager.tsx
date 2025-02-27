@@ -1,9 +1,9 @@
 import { List, ListItemText } from "@mui/material";
 import { Dashboard, FitnessCenter, AccountBox, ExitToApp } from "@mui/icons-material";
-import { Logo, LogoContainer } from "../styles/HeaderStyle";
+import { Logo, LogoContainer } from "../../styles/HeaderStyle";
 import { useNavigate } from "react-router-dom";
-import logo from '../assets/img/home-assets/logo-quadrado-v2.png';
-import { SidebarDrawer, SidebarListItem, SidebarListItemIcon, SidebarListItemText } from "../styles/SidebarStyles";
+import logo from '../../assets/img/home-assets/logo-quadrado-v2.png';
+import { SidebarDrawer, SidebarListItem, SidebarListItemIcon, SidebarListItemText } from "../../styles/SidebarStyles";
 
 
 interface SidebarProps {

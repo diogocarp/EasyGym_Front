@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const PlanContainer = styled.div`
 background: linear-gradient(to bottom, #444, #3a3a3a);
-width:95%;
+width:80%;
 display:flex;
 margin-left:15px;
 margin-top:30px;

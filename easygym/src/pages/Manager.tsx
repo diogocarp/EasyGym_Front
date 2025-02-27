@@ -1,5 +1,5 @@
 import { JSX, useState } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/sidebars/SidebarManager";
 import Dashboard from "../components/manager/Dashboard";
 import Plans from "../components/manager/Plans";
 import Members from "../components/manager/Members";

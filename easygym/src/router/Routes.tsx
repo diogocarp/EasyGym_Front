@@ -3,11 +3,9 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Manager from '../pages/Manager';
+import Member from '../pages/Member';
 import ResetPassword from '../pages/ResetPassword';
 import ConfirmedRegister from '../pages/ConfirmRegister';
-import Dashboard from '../components/manager/Dashboard';
-import Plans from '../components/manager/Plans';
-import Members from '../components/manager/Members';
 
 const routesConfig = [
   { path: '/home', element: <Home /> },
@@ -16,13 +14,7 @@ const routesConfig = [
   { path: '/reset', element: <ResetPassword /> },
   { path: '/confirmed', element: <ConfirmedRegister /> },
   { path: '/manager', element: <Manager /> },
-
-  //Caminhos para os componentes do gestor.
-
-  { path: '/dashboard', element: <Dashboard /> },
-  { path: '/plans', element: <Plans /> },
-  { path: '/members', element: <Members /> }
-
+  { path: '/member', element: <Member /> },
 ];
 
 const RootRoute = () => {

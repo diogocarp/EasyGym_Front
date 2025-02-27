@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { FitnessCenter, MonetizationOnOutlined } from "@mui/icons-material";
+import { FitnessCenter, MonetizationOnOutlined, Settings } from "@mui/icons-material";
+
 
 const Container = styled.div`
   background-color:#252525;
@@ -74,5 +75,12 @@ const MoneyIcon = styled(MonetizationOnOutlined)`
 `
 
 
+const SettingsIcon = styled(Settings)`
+    color:white;
+    margin-left:20px;
+    
+`
 
-export { Container, Title, AlertIcon, Frequency, Square, FrequencySquare,MoneyIcon,SquareData,SquareImage,SquareTitle,GymIcon}
+
+
+export { Container, Title, AlertIcon, Frequency, Square, FrequencySquare,MoneyIcon,SquareData,SquareImage,SquareTitle,GymIcon, SettingsIcon}

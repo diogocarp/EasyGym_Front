@@ -1,6 +1,6 @@
 import { Button, Icon, PlanList, PlanListItem, PlansSection } from "../../styles/HomeStyle";
 import { AlertIcon, Container, Frequency, Title } from "../../styles/manager-styles/DashboardStyle";
-import { Plan, PlanContainer, PlanText } from "../../styles/member-styles/PlansStyles";
+import { Plan, PlanContainer, PlanText } from "../../styles/member-styles/MemberPlanStyles";
 import ok from "../../assets/img/home-assets/green-ok.png"
 import Notification from "../painel/Notification";
 
@@ -15,7 +15,7 @@ const MemberPlan = () => {
             </Frequency>
             <PlanContainer>
                 <PlansSection>
-                <Plan>
+                <Plan style={{display:"grid"}}>
                     <Title style={{textAlign:"center"}}>Plano TotalFit</Title>
                     <PlanText>12 meses de fidelidade</PlanText>
                     <PlanText>Período de 31/10/2024 à 31/10/2025</PlanText>
