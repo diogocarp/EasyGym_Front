@@ -12,7 +12,6 @@ interface SidebarProps {
     activePage:string;
 }
 
-
 const Sidebar: React.FC<SidebarProps> = ({ setActivePage, activePage }) => {
 
     const navigate = useNavigate();
