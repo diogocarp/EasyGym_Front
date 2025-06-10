@@ -1,5 +1,9 @@
-export enum PaymentStatus {
+export interface PaymentProps {
+  status: PaymentStatus;
+}
+
+ export enum PaymentStatus {
     PAID = 'PAGO',
-    PENDING = 'AGUARDANDO PAGAMENTO',
+    PENDING = 'AGUARDANDO \nPAGAMENTO',
     UPCOMING = 'A VENCER',
   }

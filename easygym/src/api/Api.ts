@@ -30,8 +30,6 @@ api.interceptors.response.use(
   }
 );
 
-
-
 export function postUser(api: AxiosInstance, user: User) {
   try {
       api.post("localhost:8080/users", user).then()

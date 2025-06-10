@@ -14,6 +14,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const isAdmin = true;
 
     const handleLogin = () => {
 
@@ -26,7 +27,7 @@ const LoginPage = () => {
                 pauseOnHover: true,
                 draggable: true,
                 style: { backgroundColor: "#444", color: "white" },
-                onClose: () => navigate("/member")
+                onClose: () => { isAdmin ? navigate("/manager") : navigate("/member")}
             });
         } else {
             toast.error("Por favor, insira dados válidos.", {
@@ -75,7 +76,7 @@ const LoginPage = () => {
                         </Options>
 
                         <Button onClick={() => handleLogin()}>Logar</Button>
-                        <Button style={{width:"200px", marginLeft:"20px",marginTop:"50px"}} onClick={() => navigate("/manager")}>Logar como Operador</Button>
+                        
                     </Card>
                     
                 </Container>

@@ -11,13 +11,13 @@ export const plans = [
     {
         id: 2,
         title: "Essencial",
-        advantages: [ok, ok, x, x],
+        advantages: [x, x, ok, ok],
         fidelity: "12 meses de fidelidade"
     },
     {
         id: 3,
-        title: "Plano Livre",
-        advantages: [ok, x, x, x],
+        title: "Livre",
+        advantages: [x, x, x, ok],
         fidelity: "Sem fidelidade"
     },
 ]
