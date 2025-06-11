@@ -15,12 +15,13 @@ interface SidebarProps {
 
  const Logo = styled.img`
   cursor: pointer;
-  width: 50%;
+  width: 100px;
 `;
 
  const LogoContainer = styled.div`
   background-color: #4D4B4D;
-  width: 200px;
+  width: 235px;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;

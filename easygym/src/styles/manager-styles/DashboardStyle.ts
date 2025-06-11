@@ -1,11 +1,9 @@
 import styled from "styled-components";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { FitnessCenter, MonetizationOnOutlined, Settings } from "@mui/icons-material";
+import { InfoOutlined, FitnessCenter, AttachMoneyOutlined, Settings } from "@mui/icons-material";
 
 
 const Container = styled.div`
   background-color:#252525;
-  height:120vh;
 `
 
 const GymIcon = styled(FitnessCenter)`
@@ -17,15 +15,13 @@ const GymIcon = styled(FitnessCenter)`
 const Square = styled.div`
   background: linear-gradient(to bottom, #444, #3a3a3a);
   width:50%;
-  margin:20px;
+  height:120px;
   align-content: center;
-  border-radius: 10px;
-  box-shadow: 5px 5px ; 
   
 `;
 
 const SquareImage = styled.img`
-  width:40%;
+  width:40px;
   display:block;
   margin: 0 auto;
   
@@ -33,44 +29,43 @@ const SquareImage = styled.img`
 
 const SquareTitle = styled.p`
   color: #fff;
-  font-size: 18px;
+  font-size: 12px;
   text-align:center;
   margin: 10px;
 `;
 
 const SquareData = styled.p`
   color: #fff;
-  font-size: 25px;
+  font-size: 18px;
   text-align:center
 `;
 
 const Frequency = styled.div`
   display:flex; 
   align-items:center;
+  padding: 20px 10px 10px 10px
 `;
 
 const FrequencySquare = styled.div`
-padding:10px;
- width:400px;
- height:225px;
- display: flex;
+  padding:0px 0px 10px 10px;
+  display: flex;
+  gap: 10px;
 `;
 
-const Title = styled.h2`
+const Title = styled.h3`
     color:white;
     text-align:left;
-    padding:20px;
+    padding-left:10px;
+    font-weight:500
 `
 
-const AlertIcon = styled(ErrorOutlineIcon)`
+const InfoIcon = styled(InfoOutlined)`
     color:white;
-    margin-left:20px;
     
 `
 
-const MoneyIcon = styled(MonetizationOnOutlined)`
+const MoneyIcon = styled(AttachMoneyOutlined)`
     color:white;
-    margin-left:20px;
     
 `
 
@@ -83,4 +78,4 @@ const SettingsIcon = styled(Settings)`
 
 
 
-export { Container, Title, AlertIcon, Frequency, Square, FrequencySquare,MoneyIcon,SquareData,SquareImage,SquareTitle,GymIcon, SettingsIcon}
+export { Container, Title, InfoIcon, Frequency, Square, FrequencySquare,MoneyIcon,SquareData,SquareImage,SquareTitle,GymIcon, SettingsIcon}

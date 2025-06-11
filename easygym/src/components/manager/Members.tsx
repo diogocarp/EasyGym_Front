@@ -93,7 +93,6 @@ const Members = () => {
 
   return (
     <div style={{ display: "flex" }}>
-      <Container style={{ width: "25%" }} />
       <Container style={{ width: "90%" }}>
         <Frequency>
           <MembersIcon fontSize="large" />

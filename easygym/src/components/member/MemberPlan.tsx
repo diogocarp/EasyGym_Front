@@ -1,5 +1,5 @@
 import { Button, Icon, PlanList, PlanListItem, PlansSection } from "../../styles/HomeStyle";
-import { AlertIcon, Container, Frequency, Title } from "../../styles/manager-styles/DashboardStyle";
+import { InfoIcon, Container, Frequency, Title } from "../../styles/manager-styles/DashboardStyle";
 import { Plan, PlanContainer, PlanText } from "../../styles/member-styles/MemberPlanStyles";
 import ok from "../../assets/img/home-assets/green-ok.png"
 import Notification from "../painel/Notification";
@@ -11,7 +11,7 @@ const MemberPlan = () => {
         </Container>
         <Container style={{ width: "90%" }}>
             <Frequency>
-                <AlertIcon fontSize="large" /><Title>Meu Plano</Title>
+                <InfoIcon fontSize="large" /><Title>Meu Plano</Title>
             </Frequency>
             <PlanContainer>
                 <PlansSection>
