@@ -1,8 +1,9 @@
-import { AccountBox } from "@mui/icons-material";
+import { People } from "@mui/icons-material";
 import styled from "styled-components";
+import { IMaskInput } from 'react-imask';
 
 const Member = styled.div`
-  padding: 2rem;
+  padding: 10px 20px 10px 20px;
   color: white;
 `;
 
@@ -14,7 +15,7 @@ const Title = styled.h1`
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 20px;
 `;
@@ -43,7 +44,6 @@ const Actions = styled.div`
 `;
 
 const Button = styled.button`
-  margin-top: 10px;
   background: none;
   border: none;
   cursor: pointer;
@@ -55,12 +55,12 @@ const Button = styled.button`
 `;
 
 const SearchButton = styled.button`
-  width: 200px;
+  width: 250px;
   background: #dd212f;
   color: white;
   border: none;
   padding: 14px;
-  font-size: 16px;
+  font-size: 13px;
   cursor: pointer;
   border-radius: 20px;
   font-weight: bold;
@@ -80,10 +80,111 @@ const FilterContainer = styled.div`
   
 `
 
-const MembersIcon = styled(AccountBox)`
+const MembersIcon = styled(People)`
     color:white;
     margin-left:20px;
     
 `
 
-export {Actions,Button,Card,Member,Grid,MemberInfo,Title,MembersIcon, FilterContainer, SearchButton}
+const InputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  background: #444;
+  border-radius: 5px;
+  border: 1px solid #666;
+
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:has(input:focus) {
+    transform: scale(1.05); 
+   
+  }
+
+  @media (max-width: 768px) {
+    width: 100%; 
+  }
+`;
+
+const InputContainerEdit = styled.div`
+  display: flex;
+  align-items: center;
+  background: #444;
+  border-radius: 5px;
+  border: 1px solid #666;
+  margin-top: 10px;
+
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:has(input:focus) {
+    transform: scale(1.05); 
+   
+  }
+    
+  &:has(input:disabled) {
+    background-color: #3b3b3b
+   
+  }
+    
+
+  @media (max-width: 768px) {
+    width: 100%; 
+  }
+`;
+
+const Input = styled.input`
+  width:100%;
+  height: 40px;
+  border: none;
+  background: none;
+  outline: none;
+  flex: 1;
+  padding: 0px 10px 0px 10px;
+  font-size: 12px;
+  color:white;
+
+    &:disabled {
+        color: gray;
+    }
+
+    &::-moz-placeholder {
+        color: gray; 
+    }
+
+    &::-ms-input-placeholder {
+        color: gray; 
+    }
+
+    &::-webkit-calendar-picker-indicator {
+    filter: invert(1); 
+    }
+`;
+
+const InputMasked = styled(IMaskInput)`
+  width:100%;
+  height: 40px;
+  border: none;
+  background: none;
+  outline: none;
+  flex: 1;
+  padding: 0px 10px 0px 10px;
+  font-size: 12px;
+  color:white;
+
+    &:disabled {
+        color: gray;
+    }
+
+    &::-moz-placeholder {
+        color: gray; 
+    }
+
+    &::-ms-input-placeholder {
+        color: gray; 
+    }
+
+    &::-webkit-calendar-picker-indicator {
+    filter: invert(1); 
+    }
+`;
+
+export {Actions,Button,Card,Member,Grid,MemberInfo,Title,MembersIcon, FilterContainer, SearchButton, Input, InputMasked, InputContainer, InputContainerEdit}
