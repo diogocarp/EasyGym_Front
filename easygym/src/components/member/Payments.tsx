@@ -82,7 +82,7 @@ const Payments = () => {
 
   const [paymentMethod, setPaymentMethod] = useState(`Cartão de crédito final ${cardNumber.slice(-4)}`);
   const [dueDate, setDueDate] = useState<string>("10");
-  const [date,setDate] = useState("10");
+
 
   const handleSavePaymentMethod = () => {
     if (selectedMethod === "credit") {
@@ -96,7 +96,7 @@ const Payments = () => {
   };
 
   const handleSaveDueDate = () => {
-  setDate(dueDate); 
+  setDueDate(dueDate); 
   setOpenDueDateModal(false);
 };
 

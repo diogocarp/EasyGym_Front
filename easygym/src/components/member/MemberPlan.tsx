@@ -38,9 +38,6 @@ const MemberPlan = () => {
               <PlanText>12 meses de fidelidade</PlanText>
               <PlanText>Período de 31/10/2024 à 31/10/2025</PlanText>
               <Button style={{ marginTop: "10px", alignSelf: "center" }}>
-                Alterar Plano
-              </Button>
-              <Button style={{ marginTop: "10px", alignSelf: "center" }}>
                 Cancelar Plano
               </Button>
             </Plan>
