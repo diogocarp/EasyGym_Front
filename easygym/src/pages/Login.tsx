@@ -14,7 +14,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const isAdmin = true;
+    const isAdmin = false;
 
     const handleLogin = () => {
 

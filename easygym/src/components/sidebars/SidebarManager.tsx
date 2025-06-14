@@ -1,4 +1,4 @@
-import { Drawer, List } from "@mui/material";
+import { List } from "@mui/material";
 import { Dashboard, FitnessCenter, AccountBox, ExitToApp } from "@mui/icons-material";
 import { Logo, LogoContainer } from "../../styles/HeaderStyle";
 import { useNavigate } from "react-router-dom";

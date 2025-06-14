@@ -1,4 +1,4 @@
-import {  useEffect, useState } from "react";
+import {  useState } from "react";
 import styled from "styled-components";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -7,6 +7,7 @@ import { Text } from "../../styles/HomeStyle";
 import { Container, Frequency, MoneyIcon, Title } from "../../styles/manager-styles/DashboardStyle";
 import {
   AlterButton,
+  NotificationWrapper,
   PaymentCard,
   PaymentInfo,
   PaymentLabel,
@@ -16,12 +17,16 @@ import {
   SettingsContainer,
   SettingTitle,
   Value,
-  ValueDescription
+  ValueDescription,
+  Wrapper,
+  Select
 } from "../../styles/member-styles/PaymentStyles";
 import { Input, InputContainer } from "../../styles/LoginStyle";
 
 import Notification from "../painel/Notification";
 import { PaymentProps } from "../../pages/constants/PaymentStatus";
+
+import {useMediaQuery, useTheme } from "@mui/material";
 
 const Tag = styled.span<{ status: PaymentStatus }>`
   padding: 4px 10px;
@@ -62,6 +67,10 @@ export const PaymentStatusTag = ({ status }: PaymentProps) => {
 };
 
 const Payments = () => {
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
   const [openDueDateModal, setOpenDueDateModal] = useState(false);
 
@@ -73,15 +82,7 @@ const Payments = () => {
 
   const [paymentMethod, setPaymentMethod] = useState(`Cartão de crédito final ${cardNumber.slice(-4)}`);
   const [dueDate, setDueDate] = useState<string>("10");
-  const [settings, setSettings] = useState<{ dueDate?: string } | null>(null);
-  const [date,setDate] = useState(10);
-
-  useEffect(() => {
-    if (settings?.dueDate) {
-      const formattedDate = settings.dueDate.substring(0, 10);
-      setDueDate(formattedDate);
-    }
-  }, [settings]);
+  const [date,setDate] = useState("10");
 
   const handleSavePaymentMethod = () => {
     if (selectedMethod === "credit") {
@@ -95,11 +96,7 @@ const Payments = () => {
   };
 
   const handleSaveDueDate = () => {
-  if (dueDate) {
-    const selectedDay = new Date(dueDate).getDate();
-    setDate(selectedDay); 
-    setDueDate(selectedDay.toString().padStart(2, '0')); 
-  }
+  setDate(dueDate); 
   setOpenDueDateModal(false);
 };
 
@@ -116,9 +113,17 @@ const Payments = () => {
   ];
 
   return (
-    <div style={{ display: "flex" }}>
-      <Container style={{ width: "20%" }} />
-      <Container style={{ width: "80%" }}>
+    <div style={{
+  display: "flex",
+  flexDirection: isMobile ? "column" : "row",
+  flexWrap: "wrap",
+  width: "100%",
+  boxSizing: "border-box"
+}}>
+
+      {!isMobile && <Container style={{ width: "20%" }} />} 
+      <Wrapper>
+      <Container style={{ width: isMobile ? "100%" : "80%" }}>
         <Frequency>
           <MoneyIcon fontSize="large" />
           <Title>Pagamentos</Title>
@@ -127,15 +132,11 @@ const Payments = () => {
         {pagamentos.map((p, i) => (
           <PaymentCard key={i}>
             <PaymentInfo>
-              <div>
-                <strong>{p.mes}</strong>
-              </div>
+              <div><strong>{p.mes}</strong></div>
               <PaymentLabel>Vencimento {p.vencimento}</PaymentLabel>
             </PaymentInfo>
             <Value>
-              <div>
-                <strong>Valor</strong>
-              </div>
+              <div><strong>Valor</strong></div>
               <ValueDescription>{p.valor}</ValueDescription>
             </Value>
             <div>
@@ -145,7 +146,7 @@ const Payments = () => {
           </PaymentCard>
         ))}
 
-        <SettingsContainer>
+         <SettingsContainer>
           <SettingCard>
             <SettingTitle>Forma de pagamento</SettingTitle>
             <SettingDescription>{paymentMethod}</SettingDescription>
@@ -160,31 +161,21 @@ const Payments = () => {
         </SettingsContainer>
       </Container>
 
-      <Notification />
+      
 
       <Modal open={openPaymentModal} onClose={() => setOpenPaymentModal(false)}>
         <Box sx={modalStyle}>
           <h2>Editar Forma de Pagamento</h2>
           <label htmlFor="paymentType">Escolha a forma de pagamento:</label>
-          <select
-            id="paymentType"
-            value={selectedMethod}
-            onChange={(e) => setSelectedMethod(e.target.value)}
-            style={{
-              marginTop: "10px",
-              marginBottom: "20px",
-              padding: "10px",
-              borderRadius: "5px",
-              width: "100%",
-              background: "#222",
-              color: "white",
-              border: "1px solid #555"
-            }}
-          >
-            <option value="credit">Cartão de crédito</option>
-            <option value="boleto">Boleto bancário</option>
-            <option value="pix">Pix</option>
-          </select>
+          <Select
+  value={selectedMethod}
+  onChange={(e) => setSelectedMethod(e.target.value)}
+>
+  <option value="credit">Cartão de crédito</option>
+  <option value="boleto">Boleto bancário</option>
+  <option value="pix">Pix</option>
+</Select>
+
 
         {selectedMethod === "credit" && (
   <>
@@ -231,21 +222,27 @@ const Payments = () => {
       <Modal open={openDueDateModal} onClose={() => setOpenDueDateModal(false)}>
         <Box sx={modalStyle}>
           <h2>Editar Data de Vencimento</h2>
-          <InputContainer>
-            <Input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              placeholder="Ex: Todo dia 10 do mês"
-            />
-          </InputContainer>
+            <Select
+  value={dueDate}
+  onChange={(e) => setDueDate(e.target.value)}
+>
+  <option value="10">10</option>
+  <option value="15">15</option>
+  <option value="20">20</option>
+</Select>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1.5rem" }}>
             <AlterButton onClick={() => setOpenDueDateModal(false)}>Cancelar</AlterButton>
             <AlterButton onClick={handleSaveDueDate}>Salvar</AlterButton>
           </div>
         </Box>
       </Modal>
+        <NotificationWrapper>
+    <Notification />
+  </NotificationWrapper>
+      </Wrapper>
     </div>
+
+    
   );
 };
 
