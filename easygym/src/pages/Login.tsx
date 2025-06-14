@@ -14,8 +14,6 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const isAdmin = false;
-
     const handleLogin = () => {
 
         if (email && password) {
@@ -27,7 +25,7 @@ const LoginPage = () => {
                 pauseOnHover: true,
                 draggable: true,
                 style: { backgroundColor: "#444", color: "white" },
-                onClose: () => { isAdmin ? navigate("/manager") : navigate("/member")}
+                onClose: () => { password == "admin" ? navigate("/manager") : navigate("/member")}
             });
         } else {
             toast.error("Por favor, insira dados válidos.", {
