@@ -36,16 +36,16 @@ const Header = () => {
             </HeaderMenuIcon>
 
             <Nav>
-                <NavLink href="#about" onClick={(e) => smoothScroll(e, "about")}>Sobre Nós</NavLink>
-                <NavLink href="#plans" onClick={(e) => smoothScroll(e, "plans")}>Planos</NavLink>
-                <NavLink href="#contact" onClick={(e) => smoothScroll(e, "contact")}>Contato</NavLink>
+                <NavLink  href="#about" onClick={(e) => {navigate("/home"); smoothScroll(e, "about")}}>Sobre Nós</NavLink>
+                <NavLink href="#plans" onClick={(e) => {navigate("/home"); smoothScroll(e, "plans")}}>Planos</NavLink>
+                <NavLink href="#contact" onClick={(e) => {navigate("/home"); smoothScroll(e, "contact")}}>Contato</NavLink>
                 <Button onClick={() => isLogged  ? navigate("/login") : navigate("/client")}>Área do Cliente</Button>
             </Nav>
 
             <Sidebar isOpen={isMenuOpen}>
-                <NavLink href="#about" onClick={(e) => smoothScroll(e, "about")}>Sobre Nós</NavLink>
-                <NavLink href="#plans" onClick={(e) => smoothScroll(e, "plans")}>Planos</NavLink>
-                <NavLink href="#contact" onClick={(e) => smoothScroll(e, "contact")}>Contato</NavLink>
+                <NavLink  href="#about" onClick={(e) => {navigate("/home"); smoothScroll(e, "about")}}>Sobre Nós</NavLink>
+                <NavLink href="#plans" onClick={(e) => {navigate("/home"); smoothScroll(e, "plans")}}>Planos</NavLink>
+                <NavLink href="#contact" onClick={(e) => {navigate("/home"); smoothScroll(e, "contact")}}>Contato</NavLink>
                 <Button onClick={() => isLogged  ? navigate("/login") : navigate("/client")}>Área do Cliente</Button>
             </Sidebar>
         </Container>

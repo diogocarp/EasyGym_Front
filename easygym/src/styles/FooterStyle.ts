@@ -10,6 +10,7 @@ const Container = styled.footer`
   width: 100%;
   border-top: 2px solid #fff;
   align-content: center; 
+  font-size: 13px;
 `;
 
 export { Container }

@@ -20,8 +20,8 @@ interface SidebarProps {
 
  const LogoContainer = styled.div`
   background-color: #4D4B4D;
+  height: 95px;
   width: 235px;
-  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,6 +32,7 @@ interface SidebarProps {
   display: flex;
   gap: 40px;
   align-items: center;
+  font-size: 13px;
 
   @media (max-width: 768px) {
     display: none;
@@ -47,8 +48,7 @@ interface SidebarProps {
 `;
 
 const Button = styled.button`
-  width: 160px;
-  height: 45px;
+  padding: 10px 15px 10px 15px;
   color: white;
   background-color: #DD212F;
   cursor: pointer;

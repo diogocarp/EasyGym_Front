@@ -75,26 +75,17 @@ const Icon = styled.img`
 `;
 
 const AboutSection = styled.div`
-  width: 800px;
-  height: 400px;
-  background: linear-gradient(to top, #3a3a3a, #1a1a1a);
+  width: 550px;
+  background: linear-gradient(to top, #3a3a3a, #252525);
   border-left: 5px solid #fff;
   color: white;
   padding: 50px;
   margin-right: 100px;
   font-size: 20px;
-  position: absolute;
-  right: 0;
-
-  @media (max-width: 1200px) {
-    width: 600px;
-    margin-right: 100px;
-  }
 
   @media (max-width: 1000px) {
     width: 100%;
     margin-right: 0;
-    position: relative;
     border-left: none;
     border-top: 5px solid #fff;
     padding: 20px;
@@ -103,7 +94,8 @@ const AboutSection = styled.div`
 `;
 
 const AboutImage = styled.img`
-  width: 45%;
+  width: 650px;
+  margin-right: -100px;
 
   @media (max-width: 1000px) {
     width: 100%;
@@ -112,50 +104,41 @@ const AboutImage = styled.img`
 `;
 
 const ContactSection = styled.div`
-  width: 900px;
-  height: 400px;
-  background: linear-gradient(to bottom, #3a3a3a, #1a1a1a);
+  width: 550px;
+  background: linear-gradient(to top, #3a3a3a, #252525);
   border-right: 5px solid #fff;
   color: white;
-  font-size: 20px;
   padding: 50px;
   margin-left: 100px;
-  position: absolute;
-  left: 0;
-
-  @media (max-width: 1200px) {
-    width: 600px;
-    margin-left: 100px;
-  }
+  font-size: 20px;
+  z-index: 999;
 
   @media (max-width: 1000px) {
     width: 100%;
     margin-left: 0;
-    position: relative;
     border-right: none;
-    border-bottom: 5px solid #fff;
+    border-top: 5px solid #fff;
     padding: 20px;
     height: auto;
   }
 `;
 
 const ContactImage = styled.img`
-  width: 45%;
+  width: 650px;
+  margin-left: -100px;
 
   @media (max-width: 1000px) {
     width: 100%;
   }
-
 
 `;
 
 const Section = styled.section`
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 40px;
   gap: 20px;
-  margin-top: 60px;
-  margin-bottom: 20px;
 
   @media (max-width: 1000px) {
     flex-direction: column;
@@ -166,6 +149,7 @@ const Section = styled.section`
 const Text = styled.p`
   color: white;
   margin-top: 20px;
+  font-size: 15px;
 `;
 
 const Title = styled.h1`

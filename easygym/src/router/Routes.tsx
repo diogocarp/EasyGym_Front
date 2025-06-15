@@ -6,6 +6,7 @@ import Manager from '../pages/Manager';
 import Member from '../pages/Member';
 import ResetPassword from '../pages/ResetPassword';
 import ConfirmedRegister from '../pages/ConfirmRegister';
+import ConfirmedReset from '../pages/ConfirmReset';
 
 const routesConfig = [
   { path: '/home', element: <Home /> },
@@ -13,6 +14,7 @@ const routesConfig = [
   { path: '/register', element: <Register /> },
   { path: '/reset', element: <ResetPassword /> },
   { path: '/confirmed', element: <ConfirmedRegister /> },
+  { path: '/confirmedReset', element: <ConfirmedReset /> },
   { path: '/manager', element: <Manager /> },
   { path: '/member', element: <Member /> },
 ];

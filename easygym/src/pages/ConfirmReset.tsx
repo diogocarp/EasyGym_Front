@@ -6,7 +6,7 @@ import confirmed from '../assets/img/home-assets/confirmed.png';
 import {  ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const ConfirmedRegister = () => {
+const ConfirmedReset = () => {
     
     return (
         <>
@@ -17,9 +17,9 @@ const ConfirmedRegister = () => {
                         <Card>
                             <Logo src={logo} /><br/>
                             <img src={confirmed}/><br/><br/>
-                            <p style={{ color: "white", marginBottom: 10, fontSize: 18 }}>Perfeito! Seu cadastro está quase finalizado</p>
+                            <p style={{ color: "white", marginBottom: 10, fontSize: 18 }}>Email de redefinição enviado!</p>
                             <p style={{ color: "#ababab", fontSize: 14 }}>
-                                Por favor, verifique seu email para uma confirmação do seu cadastro
+                                Por favor, verifique seu email para prosseguir com a redefinição de senha
                             </p>
                         
                         </Card>
@@ -33,4 +33,4 @@ const ConfirmedRegister = () => {
     );
 };
 
-export default ConfirmedRegister;
+export default ConfirmedReset;

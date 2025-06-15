@@ -1,20 +1,26 @@
 import styled from "styled-components";
 
+const RootSection = styled.section`
+  height: 100vh;
+  background-color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
 const Container = styled.div`
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
 `;
 
 const Section = styled.section`
-  background-color: #1a1a1a;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
-  padding: 80px 20px;
 
   @media (max-width: 768px) {
     padding: 40px 20px;
@@ -22,7 +28,7 @@ const Section = styled.section`
 `;
 
 const Card = styled.div`
-  background: linear-gradient(to left, #3a3a3a, #1a1a1a);
+  background: linear-gradient(to left, #3a3a3a, #252525);
   padding: 40px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -37,7 +43,7 @@ const Card = styled.div`
 
 const Logo = styled.img`
   cursor: pointer;
-  width: 50%;
+  width: 120px;
   margin-bottom: 20px;
 `;
 
@@ -45,10 +51,9 @@ const InputContainer = styled.div`
   display: flex;
   align-items: center;
   background: #444;
-  padding: 12px;
-  margin: 12px 0;
   border-radius: 5px;
   border: 1px solid #666;
+  flex-grow: 1;
 
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
@@ -63,16 +68,17 @@ const InputContainer = styled.div`
 `;
 
 const Input = styled.input`
- width:100%;
+  width:100%;
+  height: 40px;
   border: none;
   background: none;
   outline: none;
   flex: 1;
-  padding-left: 10px;
-  font-size: 14px;
+  padding: 0px 10px 0px 10px;
+  font-size: 12px;
   color:white;
 
-    &::-webkit-datetime-edit {
+    &:disabled {
         color: gray;
     }
 
@@ -91,10 +97,11 @@ const Input = styled.input`
 
 const Options = styled.div`
   display: flex;
-  justify-content: space-between;
-  font-size: 14px;
+  justify-content: center;
+  font-size: 12px;
   color: #bbb;
   margin-top: 15px;
+  gap: 10px;
 
   @media (max-width: 500px) {
     flex-direction: column;
@@ -122,12 +129,12 @@ const Button = styled.button`
   background: #dd212f;
   color: white;
   border: none;
-  padding: 14px;
-  font-size: 16px;
+  padding: 10px;
+  font-size: 14px;
   cursor: pointer;
   border-radius: 20px;
   margin-top: 15px;
-  font-weight: bold;
+  font-weight: normal;
   transition: background 0.3s;
 
   &:hover {
@@ -135,4 +142,4 @@ const Button = styled.button`
   }
 `;
 
-export { Container, Section, Card, Logo, InputContainer, Input, Options, Checkbox, Link, Button };
+export { Container, Section, Card, Logo, InputContainer, Input, Options, Checkbox, Link, Button, RootSection };

@@ -1,6 +1,6 @@
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { Button, Card, Checkbox, Container, Input, InputContainer, Link, Logo, Options, Section } from "../styles/LoginStyle";
+import { Button, Card, Checkbox, Container, Input, InputContainer, Link, Logo, Options, Section, RootSection } from "../styles/LoginStyle";
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import logo from '../assets/img/home-assets/logo-quadrado-v2.png';
@@ -42,46 +42,48 @@ const LoginPage = () => {
 
     return (
         <>
-            <Header />
-            <Section>
-                <Container>
-                    <Card>
-                        <Logo src={logo} />
-                        <p style={{ color: "white", marginBottom: 20, fontSize: 22 }}>Bem-vindo Novamente!</p>
+            <RootSection>
+                <Header />
+                <Section>
+                    <Container>
+                        <Card>
+                            <Logo src={logo} />
+                            <p style={{ color: "white", fontSize: 18 }}>Bem-vindo Novamente!</p>
 
-                        <Options style={{ margin: "20px 60px" }}>
-                            <span>Primeira vez por aqui?</span>
-                            <Link onClick={() => navigate("/register")}>
-                                Cadastre-se
-                            </Link>
-                        </Options>
+                            <Options style={{ margin: "10px 20px 20px 20px" }}>
+                                <span>Primeira vez por aqui?</span>
+                                <Link onClick={() => navigate("/register")}>
+                                    Cadastre-se
+                                </Link>
+                            </Options>
 
-                        <InputContainer>
-                            <PersonIcon />
-                            <Input type="text" placeholder="Digite seu email ou CPF" onChange={(e) => setEmail(e.target.value)} />
-                        </InputContainer>
+                            <InputContainer>
+                                <PersonIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
+                                <Input style={{ paddingLeft: "45px" }} type="text" placeholder="Digite seu email ou CPF" onChange={(e) => setEmail(e.target.value)} />
+                            </InputContainer>
 
-                        <InputContainer>
-                            <LockIcon />
-                            <Input type="password" placeholder="Digite sua senha" onChange={(e) => setPassword(e.target.value)} />
-                        </InputContainer>
+                            <InputContainer style={{marginTop: "10px"}}>
+                                <LockIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
+                                <Input style={{ paddingLeft: "45px" }} type="password" placeholder="Digite sua senha" onChange={(e) => setPassword(e.target.value)} />
+                            </InputContainer>
 
-                        <Options>
-                            <label>
-                                <Checkbox type="checkbox" /> Lembrar-me
-                            </label>
-                            <Link onClick={() => navigate("/reset")}>Esqueceu a senha?</Link>
-                        </Options>
+                            <Options style={{justifyContent: "space-between"}}>
+                                <label style={{display: "flex", alignItems: "center"}}>
+                                    <Checkbox type="checkbox" /> Lembrar-me
+                                </label>
+                                <Link onClick={() => navigate("/reset")}>Esqueceu a senha?</Link>
+                            </Options>
 
-                        <Button onClick={() => handleLogin()}>Logar</Button>
+                            <Button onClick={() => handleLogin()}>Logar</Button>
+                            
+                        </Card>
                         
-                    </Card>
-                    
-                </Container>
-            
-            </Section>
-            
-            <Footer />
+                    </Container>
+                
+                </Section>
+                
+                <Footer />
+            </RootSection>
 
             <ToastContainer />
         </>
