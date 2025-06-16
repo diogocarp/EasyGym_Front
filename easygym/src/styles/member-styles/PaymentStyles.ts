@@ -1,14 +1,7 @@
 import styled from 'styled-components';
 import { PaymentStatus } from './../../pages/constants/PaymentStatus';
-
-const Container = styled.div`
-  background-color: #1e1e1e;
-  color: white;
-  padding: 2rem;
-  font-family: Arial, sans-serif;
-  width: 100%;
-  box-sizing: border-box;
-`;
+import { AttachMoneyOutlined } from "@mui/icons-material";
+import { IMaskInput } from "react-imask";
 
 const PaymentTitle = styled.h1`
   display: flex;
@@ -19,14 +12,11 @@ const PaymentTitle = styled.h1`
 `;
 
 const PaymentCard = styled.div`
-  background: #2a2a2a;
+  background: #373737;
   padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  border-radius: 5px;
   width: 100%;
-  max-width: 1200px;
   display: flex;
-  flex-wrap: wrap;
   gap: 1rem;
   justify-content: space-between;
   align-items: center;
@@ -37,17 +27,26 @@ const PaymentCard = styled.div`
   }
 `;
 
+const TitleCard = styled.div`
+  display:flex; 
+  align-items:center;
+  margin-bottom: 20px;
+`;
+
 const PaymentInfo = styled.div`
   display: flex;
   flex-direction: column;
   color: white;
+  flex-grow: 1;
+  align-items: start;
+  width: 100%;
 `;
 
 const PaymentLabel = styled.span`
   text-align: center;
   color: #C3C3C3;
   margin-bottom: 10px;
-  font-size: 16px;
+  font-size: 14px;
   font-style: italic;
   margin-top: 18px;
 `;
@@ -56,13 +55,33 @@ const Value = styled.div`
   text-align: right;
   color: white;
   justify-content: start;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+`;
+
+const Text = styled.p`
+  color: white;
+  font-size: 15px;
+`;
+
+const StatusDiv = styled.div`
+  text-align: right;
+  color: white;
+  justify-content: start;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
 `;
 
 const ValueDescription = styled.p`
   text-align: center;
   color: #C3C3C3;
-  margin-top: 10px;
-  font-size: 18px;
+  font-size: 14px;
   font-style: italic;
 `;
 
@@ -88,7 +107,7 @@ const SettingsContainer = styled.div`
 `;
 
 const SettingCard = styled.div`
-  background: #2a2a2a;
+  background: #373737;
   padding: 1rem;
   border-radius: 8px;
   flex: 1 1 100px;
@@ -171,14 +190,134 @@ const Select = styled.select`
   }
 `;
 
+const Container = styled.div`
+  background-color:#252525;
+  width: 100%;
+  padding: 10px;
+`
 
+const MoneyIcon = styled(AttachMoneyOutlined)`
+    color:white;
+`
+
+const Title = styled.h3`
+    color:white;
+    text-align:left;
+    padding-left:10px;
+    font-weight:500
+`
+
+const InputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  background: #444;
+  border-radius: 5px;
+  border: 1px solid #666;
+  flex-grow: 1;
+  margin-bottom: 10px;
+
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:has(input:focus) {
+    transform: scale(1.05); 
+   
+  }
+
+  @media (max-width: 768px) {
+    width: 100%; 
+  }
+`;
+
+const Input = styled.input`
+  width:100%;
+  height: 40px;
+  border: none;
+  background: none;
+  outline: none;
+  flex: 1;
+  padding: 0px 10px 0px 10px;
+  font-size: 12px;
+  color:white;
+
+    &:disabled {
+        color: gray;
+    }
+
+    &::-moz-placeholder {
+        color: gray; 
+    }
+
+    &::-ms-input-placeholder {
+        color: gray; 
+    }
+
+    &::-webkit-calendar-picker-indicator {
+    filter: invert(1); 
+    }
+`;
+
+const PaymentsDiv = styled.div`
+    max-height: 435px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+`;
+
+const Tag = styled.span<{ status: PaymentStatus }>`
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-style: italic;
+  color: white;
+
+  background-color: ${({ status }) => {
+    switch (status) {
+      case PaymentStatus.PAID:
+        return "#1e7f14";
+      case PaymentStatus.PENDING:
+        return "#c7311c";
+      case PaymentStatus.UPCOMING:
+        return "#757575";
+      default:
+        return "#757575";
+    }
+  }};
+`;
+
+const CustomMaskedInput = styled(IMaskInput)`
+  width:100%;
+  height: 40px;
+  border: none;
+  background: none;
+  outline: none;
+  flex: 1;
+  padding: 0px 10px 0px 10px;
+  font-size: 12px;
+  color:white;
+
+    &:disabled {
+        color: gray;
+    }
+
+    &::-moz-placeholder {
+        color: gray; 
+    }
+
+    &::-ms-input-placeholder {
+        color: gray; 
+    }
+
+    &::-webkit-calendar-picker-indicator {
+    filter: invert(1); 
+    }
+`;
 
 export {
   Select,
   Wrapper,
   NotificationWrapper,
   AlterButton,
-  Container,
   PaymentCard,
   PaymentInfo,
   PaymentLabel,
@@ -190,5 +329,16 @@ export {
   Value,
   PaymentTitle,
   PaymentStatus,
-  ValueDescription
+  ValueDescription,
+  StatusDiv,
+  Text,
+  Title,
+  TitleCard,
+  Container,
+  MoneyIcon,
+  Input,
+  InputContainer,
+  PaymentsDiv,
+  Tag,
+  CustomMaskedInput
 };

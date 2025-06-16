@@ -1,9 +1,53 @@
 import { useTheme, useMediaQuery } from "@mui/material";
-import { Button, Icon, PlanList, PlanListItem, PlansSection } from "../../styles/HomeStyle";
-import { InfoIcon, Container, Frequency, Title } from "../../styles/manager-styles/DashboardStyle";
-import { Plan, PlanContainer, PlanText } from "../../styles/member-styles/MemberPlanStyles";
-import Notification from "../painel/Notification";
+import { 
+  Plan, 
+  PlanContainer, 
+  PlanText, 
+  InfoIcon, 
+  Container, 
+  TitleBox, 
+  Title, 
+  Button, 
+  Icon, 
+  PlanList, 
+  PlanListItem, 
+  PlansSection 
+} from "../../styles/member-styles/MemberPlanStyles";
 import ok from "../../assets/img/home-assets/green-ok.png";
+import x from "../../assets/img/home-assets/red-x.png";
+
+interface Feature {
+    name: String;
+    value: Boolean;
+}
+
+interface Plan {
+    id: number;
+    title: String;
+    description: String;
+    value: number;
+    features: Feature [];
+    fidelity: String;
+    startDate: String;
+    endDate: String;
+}
+
+export const plan: Plan =
+  {
+    id: 1,
+    title: "TotalFit",
+    description: "Treine na unidade com diversos beneficios únicos e atendimento customizado",
+    value: 129.99,
+    features: [
+      { name: "Acesso à sauna e spa", value: true },
+      { name: "Consultas com Nutricionista", value: true },
+      { name: "Personal Trainer", value: true },
+      { name: "Área de musculação e cardio", value: true },
+    ],
+    fidelity: "12 meses de fidelidade",
+    startDate: "01/01/2025",
+    endDate: "31/12/2025"
+  };
 
 const MemberPlan = () => {
   const theme = useTheme();
@@ -19,10 +63,10 @@ const MemberPlan = () => {
       }}
     >
       <Container style={{ width: "100%" }}>
-        <Frequency>
+        <TitleBox>
           <InfoIcon fontSize="large" />
           <Title>Meu Plano</Title>
-        </Frequency>
+        </TitleBox>
 
         <PlanContainer>
           <PlansSection style={{ flex: 1 }}>
@@ -34,9 +78,9 @@ const MemberPlan = () => {
                 justifyContent: "center",
               }}
             >
-              <Title style={{ textAlign: "center" }}>Plano TotalFit</Title>
-              <PlanText>12 meses de fidelidade</PlanText>
-              <PlanText>Período de 31/10/2024 à 31/10/2025</PlanText>
+              <Title style={{ textAlign: "center" }}>Plano {plan.title}</Title>
+              <PlanText>{plan.fidelity}</PlanText>
+              <PlanText>Período de {plan.startDate} à {plan.endDate}</PlanText>
               <Button style={{ marginTop: "10px", alignSelf: "center" }}>
                 Cancelar Plano
               </Button>
@@ -53,26 +97,15 @@ const MemberPlan = () => {
             }}
           >
             <PlanList>
-              <PlanListItem>
-                <Icon src={ok} /> Acesso à sauna e spa
-              </PlanListItem>
-              <PlanListItem>
-                <Icon src={ok} /> Consultas com Nutricionista
-              </PlanListItem>
-              <PlanListItem>
-                <Icon src={ok} /> Personal Trainer
-              </PlanListItem>
-              <PlanListItem>
-                <Icon src={ok} /> Área de musculação e cardio
-              </PlanListItem>
+              {plan.features.map((feature, idx) => (
+                <PlanListItem key={idx}>
+                    <Icon src={feature.value ? ok : x} /> {feature.name}
+                </PlanListItem>
+                ))}
             </PlanList>
           </Plan>
         </PlanContainer>
       </Container>
-
-      <div style={{ width: isMobile ? "100%" : "300px" }}>
-        <Notification />
-      </div>
     </div>
   );
 };

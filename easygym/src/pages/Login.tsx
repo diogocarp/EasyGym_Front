@@ -59,12 +59,12 @@ const LoginPage = () => {
 
                             <InputContainer>
                                 <PersonIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
-                                <Input style={{ paddingLeft: "45px" }} type="text" placeholder="Digite seu email ou CPF" onChange={(e) => setEmail(e.target.value)} />
+                                <Input name="email" style={{ paddingLeft: "45px" }} type="text" placeholder="Digite seu email ou CPF" onChange={(e) => setEmail(e.target.value)} />
                             </InputContainer>
 
                             <InputContainer style={{marginTop: "10px"}}>
                                 <LockIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
-                                <Input style={{ paddingLeft: "45px" }} type="password" placeholder="Digite sua senha" onChange={(e) => setPassword(e.target.value)} />
+                                <Input name="password" style={{ paddingLeft: "45px" }} type="password" placeholder="Digite sua senha" onChange={(e) => setPassword(e.target.value)} />
                             </InputContainer>
 
                             <Options style={{justifyContent: "space-between"}}>

@@ -6,7 +6,7 @@ const Footer = () => {
     return (
 
         <Container>
-            EasyGym © 2024
+            EasyGym © 2025
         </Container>
 
     )

@@ -3,7 +3,7 @@ export interface PaymentProps {
 }
 
  export enum PaymentStatus {
-    PAID = 'PAGO',
-    PENDING = 'AGUARDANDO \nPAGAMENTO',
-    UPCOMING = 'A VENCER',
+    PAID = 'Pago',
+    PENDING = 'Aguardando \nPagamento',
+    UPCOMING = 'A Vencer',
   }

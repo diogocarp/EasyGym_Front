@@ -1,6 +1,5 @@
 import {
-  Container, Frequency, GymIcon, Title, PlansSection,
-  PlanCard, PlanList, PlanListItem, Icon, Button, Descricao, InputMasked, InputContainer
+  Title, PlansSection, PlanCard, PlanList, PlanListItem, Icon, Button, Descricao
 } from "../../styles/PlansStyle";
 import ok from "../../assets/img/home-assets/green-ok.png";
 import x from "../../assets/img/home-assets/red-x.png";

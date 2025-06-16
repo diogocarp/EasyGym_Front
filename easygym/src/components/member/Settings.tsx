@@ -1,34 +1,30 @@
 import { useState } from 'react';
-import { useMediaQuery, useTheme, Modal, Box } from '@mui/material';
-import {
-  Container, Frequency, SettingsIcon, Title
-} from "../../styles/manager-styles/DashboardStyle";
-import {
-  Button, ButtonContainer, Card, Field, Input, Row, Section, SectionTitle, NotificationWrapper,Wrapper,
-} from "../../styles/member-styles/SettingsStyles";
-import Notification from "../painel/Notification";
-import { CalendarMonth, Dock, Lock, Mail, Person, Phone } from "@mui/icons-material";
-import { AlterButton } from '../../styles/member-styles/PaymentStyles';
-import { InputContainer } from '../../styles/LoginStyle';
 
-const modalStyle = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  backgroundColor: '#1e1e1e',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-  padding: '2rem',
-  borderRadius: '16px',
-  width: '95%',
-  maxWidth: '600px',
-  maxHeight: '90vh',
-  overflowY: 'auto',
-  color: 'white',
-  transition: 'all 0.3s ease-in-out',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
+import { useMediaQuery, useTheme } from '@mui/material';
+import { Lock } from '@mui/icons-material';
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
-};
+import {
+  Button,
+  ButtonContainer,
+  Card,
+  Container,
+  CustomMaskedInput,
+  Input,
+  InputContainer,
+  Row,
+  Section,
+  SectionTitle,
+  SettingsIcon,
+  Title,
+  TitleBox
+} from '../../styles/member-styles/SettingsStyles';
+
+import { toast, ToastContainer } from 'react-toastify';
 
 const Setting = () => {
   const theme = useTheme();
@@ -43,13 +39,66 @@ const Setting = () => {
     birth: '2000-01-01',
   });
 
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [tempUserData, setTempUserData] = useState(userData);
+  const [formData, setFormData] = useState({ ...userData });
 
-  const handleSave = () => {
-  setUserData({ ...tempUserData });
-  setEditModalOpen(false);
-};
+  const [senhaAntiga, setSenhaAntiga] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmaSenha, setConfirmaSenha] = useState('');
+  const [dataInicio, setDataInicio] = useState('');
+  const [dataFim, setDataFim] = useState('');
+
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info',
+    duration = 3000
+  ) => {
+    toast[type](message, {
+      position: "bottom-right",
+      autoClose: duration,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: type !== 'info',
+      draggable: true,
+      style: { backgroundColor: "#444", color: "white" },
+    });
+  };
+
+  const handleUpdateUserData = () => {
+    const { name, tel, birth } = formData;
+    if (!name || !tel || !birth) {
+      showToast("Por favor, preencha todos os campos.", "error", 5000);
+      return;
+    }
+
+    setUserData({ ...formData });
+    showToast("Dados atualizados com sucesso!", "success");
+  };
+
+  const handleUpdatePassword = () => {
+    if (!senhaAntiga || !novaSenha || !confirmaSenha) {
+      showToast("Preencha todos os campos de senha.", "error", 5000);
+      return;
+    }
+
+    if (novaSenha !== confirmaSenha) {
+      showToast("As senhas não coincidem.", "error", 5000);
+      return;
+    }
+
+    setSenhaAntiga('');
+    setNovaSenha('');
+    setConfirmaSenha('');
+
+    showToast("Senha alterada com sucesso!", "success");
+  };
+
+  const handleFilterLogs = () => {
+    if (!dataInicio || !dataFim) {
+      showToast("Preencha as datas de início e fim para gerar o relatório.", "error", 5000);
+      return;
+    }
+    showToast("Gerando relatório...", "info", 2000);
+  };
 
   return (
     <div style={{
@@ -59,122 +108,157 @@ const Setting = () => {
       width: "100%",
       boxSizing: "border-box"
     }}>
-      <Container style={{ width: isMobile ? "100%" : "30%" }} />
-      <Wrapper>
-      <Container style={{ width: isMobile ? "100%" : "70%" }}>
-        <Frequency>
+      <Container style={{ width: "100%", padding: "10px 20px" }}>
+        <TitleBox>
           <SettingsIcon fontSize="large" />
           <Title>Configurações</Title>
-        </Frequency>
-
+        </TitleBox>
+        <br/><br/>
         <Section>
           <SectionTitle>Dados pessoais</SectionTitle>
           <Card>
-            <Row>
-              <Field><Person /><Input value={userData.name} readOnly /></Field>
-              <Field><Mail /><Input value={userData.email} readOnly /></Field>
+            <Row style={{ flexDirection: isMobile ? "column" : "row" }}>
+              <InputContainer>
+                <PersonIcon style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <Input
+                  style={{ paddingLeft: "45px" }}
+                  name="name"
+                  type="text"
+                  placeholder="Nome Completo"
+                  value={formData.name}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                />
+              </InputContainer>
+              <InputContainer>
+                <EmailIcon style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <Input
+                  style={{ paddingLeft: "45px" }}
+                  name="email"
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  disabled
+                />
+              </InputContainer>
             </Row>
-            <Row>
-              <Field><Dock /><Input value={userData.cpf} readOnly /></Field>
-              <Field><Phone /><Input value={userData.tel} readOnly /></Field>
-              <Field><CalendarMonth /><Input value={userData.birth} readOnly /></Field>
+
+            <Row style={{ flexDirection: isMobile ? "column" : "row" }}>
+              <InputContainer>
+                <FingerprintIcon style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <CustomMaskedInput
+                  style={{ paddingLeft: "45px" }}
+                  mask="000.000.000-00"
+                  unmask={true}
+                  placeholder="CPF"
+                  value={formData.cpf}
+                  disabled
+                />
+              </InputContainer>
+              <InputContainer>
+                <LocalPhoneIcon style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <CustomMaskedInput
+                  style={{ paddingLeft: "45px" }}
+                  mask="(00) 00000-0000"
+                  unmask={true}
+                  placeholder="Telefone"
+                  value={formData.tel}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, tel: e.target.value })}
+                />
+              </InputContainer>
+              <InputContainer>
+                <CalendarMonthIcon style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <Input
+                  style={{ paddingLeft: "45px" }}
+                  type="date"
+                  value={formData.birth}
+                  onChange={e => setFormData({ ...formData, birth: e.target.value })}
+                />
+              </InputContainer>
             </Row>
             <ButtonContainer>
-              <Button onClick={() => {
-                setTempUserData(userData);
-                setEditModalOpen(true);
-              }}>Atualizar</Button>
+              <Button onClick={handleUpdateUserData}>Atualizar</Button>
             </ButtonContainer>
           </Card>
         </Section>
-
-        <Section style={{ display: 'flex', flexDirection: isTablet ? 'column' : 'row', gap: '2rem' }}>
+        <br/>
+        <Section style={{ display: 'flex', flexDirection: isTablet ? 'column' : 'row', gap: '1rem' }}>
           <Card style={{ flex: 1 }}>
             <SectionTitle>Alterar senha</SectionTitle>
-            <Field><Lock /><Input type="password" placeholder="Senha Antiga" /></Field>
-            <Field><Lock /><Input type="password" placeholder="Nova Senha" /></Field>
-            <Field><Lock /><Input type="password" placeholder="Confirmar Nova Senha" /></Field>
+            <Row>
+              <InputContainer>
+                <Lock style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <Input
+                  style={{ paddingLeft: "45px" }}
+                  type="password"
+                  placeholder="Senha Antiga"
+                  value={senhaAntiga}
+                  onChange={e => setSenhaAntiga(e.target.value)}
+                  autoComplete="new-password"
+                />
+              </InputContainer>
+            </Row>
+            <Row>
+              <InputContainer>
+                <Lock style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <Input
+                  style={{ paddingLeft: "45px" }}
+                  type="password"
+                  placeholder="Nova Senha"
+                  value={novaSenha}
+                  onChange={e => setNovaSenha(e.target.value)}
+                  autoComplete="new-password"
+                />
+              </InputContainer>
+            </Row>
+            <Row>
+              <InputContainer>
+                <Lock style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <Input
+                  style={{ paddingLeft: "45px" }}
+                  type="password"
+                  placeholder="Confirmar Nova Senha"
+                  value={confirmaSenha}
+                  onChange={e => setConfirmaSenha(e.target.value)}
+                  autoComplete="new-password"
+                />
+              </InputContainer>
+            </Row>
             <ButtonContainer>
-              <Button>Atualizar</Button>
+              <Button onClick={handleUpdatePassword}>Atualizar</Button>
             </ButtonContainer>
           </Card>
 
-          <Card style={{ flex: 1 }}>
+          <Card style={{ flex: 1, height: "fit-content" }}>
             <SectionTitle>Histórico de acessos</SectionTitle>
-            <Field><CalendarMonth /><Input type="date" placeholder="Data inicial" /></Field>
-            <Field><CalendarMonth /><Input type="date" placeholder="Data final" /></Field>
+            <Row>
+              <InputContainer style={{ height: "60px" }}>
+                <CalendarMonthIcon style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <Input
+                  style={{ paddingLeft: "45px" }}
+                  type="date"
+                  value={dataInicio}
+                  onChange={e => setDataInicio(e.target.value)}
+                />
+              </InputContainer>
+            </Row>
+            <Row>
+              <InputContainer style={{ height: "60px" }}>
+                <CalendarMonthIcon style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
+                <Input
+                  style={{ paddingLeft: "45px" }}
+                  type="date"
+                  value={dataFim}
+                  onChange={e => setDataFim(e.target.value)}
+                />
+              </InputContainer>
+            </Row>
             <ButtonContainer>
-              <Button>Filtrar</Button>
+              <Button onClick={handleFilterLogs}>Filtrar</Button>
             </ButtonContainer>
           </Card>
         </Section>
       </Container>
-
-     
-
-      <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)}>
-  <Box sx={modalStyle}>
-    <h2 style={{ marginBottom: '1.5rem', color: 'white' }}>Editar dados</h2>
-
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <InputContainer>
-        <Input
-          style={{ color: 'white' }}
-          type="text"
-          placeholder="Nome"
-          value={tempUserData.name}
-          onChange={(e) => setTempUserData({ ...tempUserData, name: e.target.value })}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Input
-          style={{ color: 'white' }}
-          type="email"
-          placeholder="Email"
-          value={tempUserData.email}
-          onChange={(e) => setTempUserData({ ...tempUserData, email: e.target.value })}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Input
-          style={{ color: 'white' }}
-          type="text"
-          placeholder="CPF"
-          value={tempUserData.cpf}
-          onChange={(e) => setTempUserData({ ...tempUserData, cpf: e.target.value })}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Input
-          style={{ color: 'white' }}
-          type="tel"
-          placeholder="Telefone"
-          value={tempUserData.tel}
-          onChange={(e) => setTempUserData({ ...tempUserData, tel: e.target.value })}
-        />
-      </InputContainer>
-      <InputContainer>
-        <Input
-          style={{ color: 'white' }}
-          type="date"
-          placeholder="Nascimento"
-          value={tempUserData.birth}
-          onChange={(e) => setTempUserData({ ...tempUserData, birth: e.target.value })}
-        />
-      </InputContainer>
-    </div>
-
-    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
-      <AlterButton onClick={() => setEditModalOpen(false)}>Cancelar</AlterButton>
-      <AlterButton onClick={handleSave}>Salvar</AlterButton>
-    </div>
-  </Box>
-</Modal>
-
-      <NotificationWrapper>
-          <Notification />
-        </NotificationWrapper>
-      </Wrapper>
+      <ToastContainer />
     </div>
   );
 };

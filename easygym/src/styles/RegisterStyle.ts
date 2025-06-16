@@ -38,6 +38,16 @@ const CustomMaskedInput = styled(IMaskInput)`
     filter: invert(1); 
     }
 
+    &:-internal-autofill-selected {
+      transition: background-color 0s 600000s, color 0s 600000s !important;
+    }
+    &:-webkit-autofill {
+      transition: background-color 0s 600000s, color 0s 600000s !important;
+    }
+    &:-webkit-autofill:focus {
+      transition: background-color 0s 600000s, color 0s 600000s !important;
+    }
+
 `;
 
 
@@ -93,6 +103,16 @@ const Input = styled.input`
 
     &::-webkit-calendar-picker-indicator {
     filter: invert(1); 
+    }
+
+    &:-internal-autofill-selected {
+      transition: background-color 0s 600000s, color 0s 600000s !important;
+    }
+    &:-webkit-autofill {
+      transition: background-color 0s 600000s, color 0s 600000s !important;
+    }
+    &:-webkit-autofill:focus {
+      transition: background-color 0s 600000s, color 0s 600000s !important;
     }
 `;
 

@@ -1,17 +1,12 @@
-import {  useState } from "react";
-import styled from "styled-components";
+import { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-
-import { Text } from "../../styles/HomeStyle";
-import { Container, Frequency, MoneyIcon, Title } from "../../styles/manager-styles/DashboardStyle";
+import { useMediaQuery, useTheme } from "@mui/material";
 import {
   AlterButton,
-  NotificationWrapper,
   PaymentCard,
   PaymentInfo,
   PaymentLabel,
-  PaymentStatus,
   SettingCard,
   SettingDescription,
   SettingsContainer,
@@ -19,35 +14,37 @@ import {
   Value,
   ValueDescription,
   Wrapper,
-  Select
+  Select,
+  StatusDiv,
+  Text,
+  TitleCard,
+  Container,
+  MoneyIcon,
+  Title,
+  Input,
+  InputContainer,
+  PaymentsDiv,
+  Tag,
+  CustomMaskedInput
 } from "../../styles/member-styles/PaymentStyles";
-import { Input, InputContainer } from "../../styles/LoginStyle";
+import { PaymentStatus } from "../../pages/constants/PaymentStatus";
+import { toast, ToastContainer } from 'react-toastify';
 
-import Notification from "../painel/Notification";
-import { PaymentProps } from "../../pages/constants/PaymentStatus";
 
-import {useMediaQuery, useTheme } from "@mui/material";
+// === VARIÁVEIS FIXAS ===
+const VENCIMENTOS_FIXOS = ["5", "15", "27"];
+const METODOS_PAGAMENTO = [
+  { value: "credit", label: "Cartão de crédito" },
+  { value: "boleto", label: "Boleto bancário" },
+  { value: "pix", label: "Pix" },
+];
 
-const Tag = styled.span<{ status: PaymentStatus }>`
-  padding: 4px 10px;
-  border-radius: 5px;
-  font-size: 16px;
-  font-style: italic;
-  color: white;
-
-  background-color: ${({ status }) => {
-    switch (status) {
-      case PaymentStatus.PAID:
-        return "#28A109";
-      case PaymentStatus.PENDING:
-        return "#DD212F";
-      case PaymentStatus.UPCOMING:
-        return "#ADADAD";
-      default:
-        return "#757575";
-    }
-  }};
-`;
+const PAGAMENTOS = [
+  { mes: "Maio 2025", vencimento: "10/05/2025", valor: "R$ 89,99", status: PaymentStatus.PAID },
+  { mes: "Junho 2025", vencimento: "10/06/2025", valor: "R$ 89,99", status: PaymentStatus.PAID },
+  { mes: "Julho 2025", vencimento: "10/07/2025", valor: "R$ 89,99", status: PaymentStatus.PENDING },
+  { mes: "Agosto 2025", vencimento: "10/08/2025", valor: "R$ 89,99", status: PaymentStatus.UPCOMING },
+];
 
 const modalStyle = {
   position: "absolute",
@@ -59,190 +56,213 @@ const modalStyle = {
   p: 4,
   borderRadius: "8px",
   width: "400px",
-  color: "white"
-};
-
-export const PaymentStatusTag = ({ status }: PaymentProps) => {
-  return <Tag status={status}>{status}</Tag>;
+  color: "white",
 };
 
 const Payments = () => {
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
   const [openDueDateModal, setOpenDueDateModal] = useState(false);
 
-  const [selectedMethod, setSelectedMethod] = useState("credit");
-  const [cardName, setCardName] = useState("DIOGO C GALES");
-  const [cardNumber, setCardNumber] = useState("1111 0000 0000 0000");
-  const [cardExpiry, setCardExpiry] = useState("05/29");
-  const [cardCVV, setCardCVV] = useState("123");
+  const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [dueDate, setDueDate] = useState<string>("15");
+  const [paymentMethod, setPaymentMethod] = useState<string>("Cartão de crédito final 6613");
 
-  const [paymentMethod, setPaymentMethod] = useState(`Cartão de crédito final ${cardNumber.slice(-4)}`);
-  const [dueDate, setDueDate] = useState<string>("10");
-
+  const [cardData, setCardData] = useState({
+    name: "",
+    number: "",
+    expiry: "",
+    cvv: "",
+    address: "",
+  });
 
   const handleSavePaymentMethod = () => {
-    if (selectedMethod === "credit") {
-      setPaymentMethod(`Cartão de crédito final ${cardNumber.slice(-4)}`);
-    } else if (selectedMethod === "boleto") {
-      setPaymentMethod("Boleto bancário");
-    } else if (selectedMethod === "pix") {
-      setPaymentMethod("Pix");
+    if (selectedMethod === "") {
+      toast.error("Por favor, selecione um meio de pagamento", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        style: { backgroundColor: "#444", color: "white" }
+      });
+      return;
     }
+
+    if (selectedMethod === "credit") {
+      const camposObrigatorios = ["name", "number", "expiry", "cvv", "address"] as const;
+
+      const camposVazios = camposObrigatorios.filter(campo => !cardData[campo].trim());
+
+      if (camposVazios.length > 0) {
+        toast.error("Preencha todos os campos do cartão de crédito", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          style: { backgroundColor: "#444", color: "white" }
+        });
+        return;
+      }
+
+      setPaymentMethod(`Cartão de crédito final ${cardData.number.slice(-4)}`);
+    } else {
+      const metodoSelecionado = METODOS_PAGAMENTO.find(m => m.value === selectedMethod);
+      setPaymentMethod(metodoSelecionado?.label || "");
+    }
+
     setOpenPaymentModal(false);
   };
 
   const handleSaveDueDate = () => {
-  setDueDate(dueDate); 
-  setOpenDueDateModal(false);
-};
-
-  const pagamentos: {
-    mes: string;
-    vencimento: string;
-    valor: string;
-    status: PaymentStatus;
-  }[] = [
-    { mes: "Setembro 2024", vencimento: "01/10/2024", valor: "R$ 89,99", status: PaymentStatus.PAID },
-    { mes: "Setembro 2024", vencimento: "01/10/2024", valor: "R$ 89,99", status: PaymentStatus.PENDING },
-    { mes: "Setembro 2024", vencimento: "01/10/2024", valor: "R$ 89,99", status: PaymentStatus.UPCOMING },
-    { mes: "Setembro 2024", vencimento: "01/10/2024", valor: "R$ 89,99", status: PaymentStatus.UPCOMING }
-  ];
+    setDueDate(dueDate);
+    setOpenDueDateModal(false);
+  };
 
   return (
-    <div style={{
-  display: "flex",
-  flexDirection: isMobile ? "column" : "row",
-  flexWrap: "wrap",
-  width: "100%",
-  boxSizing: "border-box"
-}}>
-
-      {!isMobile && <Container style={{ width: "20%" }} />} 
+    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", width: "100%" }}>
       <Wrapper>
-      <Container style={{ width: isMobile ? "100%" : "80%" }}>
-        <Frequency>
-          <MoneyIcon fontSize="large" />
-          <Title>Pagamentos</Title>
-        </Frequency>
+        <Container>
+          <TitleCard>
+            <MoneyIcon fontSize="large" />
+            <Title>Pagamentos</Title>
+          </TitleCard>
 
-        {pagamentos.map((p, i) => (
-          <PaymentCard key={i}>
-            <PaymentInfo>
-              <div><strong>{p.mes}</strong></div>
-              <PaymentLabel>Vencimento {p.vencimento}</PaymentLabel>
-            </PaymentInfo>
-            <Value>
-              <div><strong>Valor</strong></div>
-              <ValueDescription>{p.valor}</ValueDescription>
-            </Value>
-            <div>
-              <Text style={{ marginBottom: "10px" }}>Status</Text>
-              <PaymentStatusTag status={p.status} />
+          <PaymentsDiv>
+            {PAGAMENTOS.map((p, i) => (
+              <PaymentCard key={i}>
+                <PaymentInfo>
+                  <div><strong>{p.mes}</strong></div>
+                  <PaymentLabel>Vencimento {p.vencimento}</PaymentLabel>
+                </PaymentInfo>
+                <Value>
+                  <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Valor</Text>
+                  <ValueDescription>{p.valor}</ValueDescription>
+                </Value>
+                <StatusDiv>
+                  <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Status</Text>
+                  <Tag status={p.status}>{p.status}</Tag>
+                </StatusDiv>
+              </PaymentCard>
+            ))}
+          </PaymentsDiv>
+
+          <SettingsContainer>
+            <SettingCard>
+              <SettingTitle>Forma de pagamento</SettingTitle>
+              <SettingDescription>{paymentMethod}</SettingDescription>
+              <AlterButton onClick={() => {
+                setCardData({ name: "", number: "", expiry: "", cvv: "", address: "" });
+                setSelectedMethod("");
+                setOpenPaymentModal(true);
+              }}>
+                Alterar
+              </AlterButton>
+            </SettingCard>
+
+            <SettingCard>
+              <SettingTitle>Data de vencimento</SettingTitle>
+              <SettingDescription>{`Todo dia ${dueDate} do mês`}</SettingDescription>
+              <AlterButton onClick={() => setOpenDueDateModal(true)}>Alterar</AlterButton>
+            </SettingCard>
+          </SettingsContainer>
+        </Container>
+
+        {/* Modal de Forma de Pagamento */}
+        <Modal open={openPaymentModal} onClose={() => setOpenPaymentModal(false)}>
+          <Box sx={modalStyle}>
+            <h3>Cadastrar nova forma de pagamento</h3>
+            <br/>
+            <label>Escolha a forma de pagamento:</label>
+            <Select value={selectedMethod} onChange={(e) => setSelectedMethod(e.target.value)}>
+              <option value="">Selecione</option>
+              {METODOS_PAGAMENTO.map(m => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </Select>
+
+            {selectedMethod === "credit" && (
+                <>
+                  <InputContainer>
+                    <Input
+                      placeholder="Nome no cartão"
+                      value={cardData.name}
+                      onChange={(e) => setCardData({ ...cardData, name: e.target.value })}
+                    />
+                  </InputContainer>
+
+                  <InputContainer>
+                    <CustomMaskedInput
+                      placeholder="Número do cartão"
+                      value={cardData.number}
+                      mask="0000 0000 0000 0000"
+                      unmask={true}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCardData({ ...cardData, number: e.target.value })}
+                    />
+                  </InputContainer>
+
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <InputContainer style={{ flex: 1 }}>
+                      <CustomMaskedInput
+                        placeholder="Validade (MM/AA)"
+                        value={cardData.expiry}
+                        mask="00/00"
+                        unmask={true}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCardData({ ...cardData, expiry: e.target.value })}
+                      />
+                    </InputContainer>
+
+                    <InputContainer style={{ flex: 1 }}>
+                      <CustomMaskedInput
+                        placeholder="CVV"
+                        value={cardData.cvv}
+                        mask="000"
+                        unmask={true}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCardData({ ...cardData, cvv: e.target.value })}
+                      />
+                    </InputContainer>
+                  </div>
+
+                  <InputContainer>
+                    <Input
+                      placeholder="Endereço de cobrança"
+                      value={cardData.address}
+                      onChange={(e) => setCardData({ ...cardData, address: e.target.value })}
+                    />
+                  </InputContainer>
+                </>
+              )}
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1.5rem" }}>
+              <AlterButton onClick={() => setOpenPaymentModal(false)}>Cancelar</AlterButton>
+              <AlterButton onClick={handleSavePaymentMethod}>Salvar</AlterButton>
             </div>
-          </PaymentCard>
-        ))}
+          </Box>
+        </Modal>
 
-         <SettingsContainer>
-          <SettingCard>
-            <SettingTitle>Forma de pagamento</SettingTitle>
-            <SettingDescription>{paymentMethod}</SettingDescription>
-            <AlterButton onClick={() => setOpenPaymentModal(true)}>Alterar</AlterButton>
-          </SettingCard>
-
-          <SettingCard>
-            <SettingTitle>Data de vencimento</SettingTitle>
-            <SettingDescription>{`Todo dia ${dueDate} do mês`}</SettingDescription>
-            <AlterButton onClick={() => setOpenDueDateModal(true)}>Alterar</AlterButton>
-          </SettingCard>
-        </SettingsContainer>
-      </Container>
-
-      
-
-      <Modal open={openPaymentModal} onClose={() => setOpenPaymentModal(false)}>
-        <Box sx={modalStyle}>
-          <h2>Editar Forma de Pagamento</h2>
-          <label htmlFor="paymentType">Escolha a forma de pagamento:</label>
-          <Select
-  value={selectedMethod}
-  onChange={(e) => setSelectedMethod(e.target.value)}
->
-  <option value="credit">Cartão de crédito</option>
-  <option value="boleto">Boleto bancário</option>
-  <option value="pix">Pix</option>
-</Select>
-
-
-        {selectedMethod === "credit" && (
-  <>
-    <InputContainer>
-      <Input
-        type="text"
-        placeholder="Nome no cartão"
-        value={cardName}
-        onChange={(e) => setCardName(e.target.value)}
-      />
-    </InputContainer>
-    <InputContainer>
-      <Input
-        type="text"
-        placeholder="Número do cartão"
-        value={cardNumber}
-        onChange={(e) => setCardNumber(e.target.value)}
-      />
-    </InputContainer>
-    <InputContainer style={{ display: "flex", gap: "10px" }}>
-      <Input
-        type="text"
-        placeholder="Validade (MM/AA)"
-        value={cardExpiry}
-        onChange={(e) => setCardExpiry(e.target.value)}
-      />
-      <Input
-        type="text"
-        placeholder="CVV"
-        value={cardCVV}
-        onChange={(e) => setCardCVV(e.target.value)}
-      />
-    </InputContainer>
-            </>
-          )}
-
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1.5rem" }}>
-            <AlterButton onClick={() => setOpenPaymentModal(false)}>Cancelar</AlterButton>
-            <AlterButton onClick={handleSavePaymentMethod}>Salvar</AlterButton>
-          </div>
-        </Box>
-      </Modal>
-
-      <Modal open={openDueDateModal} onClose={() => setOpenDueDateModal(false)}>
-        <Box sx={modalStyle}>
-          <h2>Editar Data de Vencimento</h2>
-            <Select
-  value={dueDate}
-  onChange={(e) => setDueDate(e.target.value)}
->
-  <option value="10">10</option>
-  <option value="15">15</option>
-  <option value="20">20</option>
-</Select>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1.5rem" }}>
-            <AlterButton onClick={() => setOpenDueDateModal(false)}>Cancelar</AlterButton>
-            <AlterButton onClick={handleSaveDueDate}>Salvar</AlterButton>
-          </div>
-        </Box>
-      </Modal>
-        <NotificationWrapper>
-    <Notification />
-  </NotificationWrapper>
+        {/* Modal de Vencimento */}
+        <Modal open={openDueDateModal} onClose={() => setOpenDueDateModal(false)}>
+          <Box sx={modalStyle}>
+            <h3>Editar Data de Vencimento</h3>
+            <Select value={dueDate} onChange={(e) => setDueDate(e.target.value)}>
+              {VENCIMENTOS_FIXOS.map(v => (
+                <option key={v} value={v}>{`Dia ${v} do mês`}</option>
+              ))}
+            </Select>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1.5rem" }}>
+              <AlterButton onClick={() => setOpenDueDateModal(false)}>Cancelar</AlterButton>
+              <AlterButton onClick={handleSaveDueDate}>Salvar</AlterButton>
+            </div>
+          </Box>
+        </Modal>
       </Wrapper>
+      <ToastContainer />
     </div>
-
-    
   );
 };
 
