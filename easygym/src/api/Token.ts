@@ -1,0 +1,1 @@
+export const TOKEN = 'abc123xyz456';

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useMediaQuery, useTheme } from '@mui/material';
 import { Lock } from '@mui/icons-material';
@@ -7,6 +7,10 @@ import EmailIcon from '@mui/icons-material/Email';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
+// APIs
+import { TOKEN } from '../../api/Token';
+import { UserApi } from '../../api/UserApi';
 
 import {
   Button,
@@ -31,15 +35,17 @@ const Setting = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
-  const [userData, setUserData] = useState({
-    name: 'Bruno Ferreira da Silva',
-    email: 'brunofs99@hotmail.com',
-    cpf: '123.456.789-09',
-    tel: '+55 (11) 94572-6687',
-    birth: '2000-01-01',
-  });
+  interface UserModel {
+    name: string;
+    email: string;
+    cpf: string;
+    tel: string;
+    birth: string;
+  }
 
-  const [formData, setFormData] = useState({ ...userData });
+  const [userData, setUserData] = useState<UserModel>();
+
+  const [formData, setFormData] = useState<any>({});
 
   const [senhaAntiga, setSenhaAntiga] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
@@ -63,18 +69,35 @@ const Setting = () => {
     });
   };
 
-  const handleUpdateUserData = () => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const user = await UserApi.getUser(TOKEN);
+        setUserData(user);
+        setFormData(user);
+      } catch (err: any) {
+        showToast(err.message || "Erro desconhecido", "error");
+      }
+    })();
+  }, []);
+
+  const handleUpdateUserData = async () => {
     const { name, tel, birth } = formData;
     if (!name || !tel || !birth) {
       showToast("Por favor, preencha todos os campos.", "error", 5000);
       return;
     }
 
-    setUserData({ ...formData });
-    showToast("Dados atualizados com sucesso!", "success");
+    try {
+      await UserApi.updateUser(TOKEN, { name, tel, birth });
+      setUserData({ ...formData });
+      showToast("Dados atualizados com sucesso!", "success");
+    } catch (err: any) {
+      showToast(err.message || "Erro desconhecido", "error");
+    }
   };
 
-  const handleUpdatePassword = () => {
+  const handleUpdatePassword = async () => {
     if (!senhaAntiga || !novaSenha || !confirmaSenha) {
       showToast("Preencha todos os campos de senha.", "error", 5000);
       return;
@@ -85,19 +108,30 @@ const Setting = () => {
       return;
     }
 
-    setSenhaAntiga('');
-    setNovaSenha('');
-    setConfirmaSenha('');
-
-    showToast("Senha alterada com sucesso!", "success");
+    try {
+      await UserApi.changePassword(TOKEN, senhaAntiga, novaSenha);
+      setSenhaAntiga('');
+      setNovaSenha('');
+      setConfirmaSenha('');
+      showToast("Senha alterada com sucesso!", "success");
+    } catch (err: any) {
+      showToast(err.message || "Erro desconhecido", "error");
+    }
   };
 
-  const handleFilterLogs = () => {
+  const handleFilterLogs = async () => {
     if (!dataInicio || !dataFim) {
       showToast("Preencha as datas de início e fim para gerar o relatório.", "error", 5000);
       return;
     }
-    showToast("Gerando relatório...", "info", 2000);
+
+    try {
+      const result = await UserApi.getReport(TOKEN, dataInicio, dataFim);
+      window.open(result.url, "_blank");
+      showToast("Relatório gerado com sucesso!", "success", 4000);
+    } catch (err: any) {
+      showToast(err.message || "Erro desconhecido", "error");
+    }
   };
 
   return (
