@@ -35,16 +35,6 @@ const Setting = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
-  interface UserModel {
-    name: string;
-    email: string;
-    cpf: string;
-    tel: string;
-    birth: string;
-  }
-
-  const [userData, setUserData] = useState<UserModel>();
-
   const [formData, setFormData] = useState<any>({});
 
   const [senhaAntiga, setSenhaAntiga] = useState('');
@@ -73,7 +63,6 @@ const Setting = () => {
     (async () => {
       try {
         const user = await UserApi.getUser(TOKEN);
-        setUserData(user);
         setFormData(user);
       } catch (err: any) {
         showToast(err.message || "Erro desconhecido", "error");
@@ -90,7 +79,6 @@ const Setting = () => {
 
     try {
       await UserApi.updateUser(TOKEN, { name, tel, birth });
-      setUserData({ ...formData });
       showToast("Dados atualizados com sucesso!", "success");
     } catch (err: any) {
       showToast(err.message || "Erro desconhecido", "error");

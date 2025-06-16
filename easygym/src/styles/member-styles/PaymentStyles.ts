@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { PaymentStatus } from './../../pages/constants/PaymentStatus';
 import { AttachMoneyOutlined } from "@mui/icons-material";
 import { IMaskInput } from "react-imask";
 
@@ -264,7 +263,7 @@ const PaymentsDiv = styled.div`
     gap: 15px;
 `;
 
-const Tag = styled.span<{ status: PaymentStatus }>`
+const Tag = styled.span<{ status: string }>`
   padding: 4px 10px;
   border-radius: 5px;
   font-size: 13px;
@@ -273,11 +272,11 @@ const Tag = styled.span<{ status: PaymentStatus }>`
 
   background-color: ${({ status }) => {
     switch (status) {
-      case PaymentStatus.PAID:
+      case "Pago":
         return "#1e7f14";
-      case PaymentStatus.PENDING:
+      case "Aguardando Pagamento":
         return "#c7311c";
-      case PaymentStatus.UPCOMING:
+      case "A Vencer":
         return "#757575";
       default:
         return "#757575";
@@ -328,7 +327,6 @@ export {
   Status,
   Value,
   PaymentTitle,
-  PaymentStatus,
   ValueDescription,
   StatusDiv,
   Text,
