@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { useMediaQuery, useTheme } from "@mui/material";
@@ -27,9 +27,11 @@ import {
   Tag,
   CustomMaskedInput
 } from "../../styles/member-styles/PaymentStyles";
-import { PaymentStatus } from "../../pages/constants/PaymentStatus";
 import { toast, ToastContainer } from 'react-toastify';
 
+// APIs
+import { TOKEN } from '../../api/Token';
+import { PaymentsApi } from '../../api/PaymentsApi';
 
 // === VARIÁVEIS FIXAS ===
 const VENCIMENTOS_FIXOS = ["5", "15", "27"];
@@ -37,13 +39,6 @@ const METODOS_PAGAMENTO = [
   { value: "credit", label: "Cartão de crédito" },
   { value: "boleto", label: "Boleto bancário" },
   { value: "pix", label: "Pix" },
-];
-
-const PAGAMENTOS = [
-  { mes: "Maio 2025", vencimento: "10/05/2025", valor: "R$ 89,99", status: PaymentStatus.PAID },
-  { mes: "Junho 2025", vencimento: "10/06/2025", valor: "R$ 89,99", status: PaymentStatus.PAID },
-  { mes: "Julho 2025", vencimento: "10/07/2025", valor: "R$ 89,99", status: PaymentStatus.PENDING },
-  { mes: "Agosto 2025", vencimento: "10/08/2025", valor: "R$ 89,99", status: PaymentStatus.UPCOMING },
 ];
 
 const modalStyle = {
@@ -59,6 +54,13 @@ const modalStyle = {
   color: "white",
 };
 
+type paymentType = {
+    mes: string;
+    vencimento: string;
+    valor: string;
+    status: string;
+}
+
 const Payments = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -67,8 +69,9 @@ const Payments = () => {
   const [openDueDateModal, setOpenDueDateModal] = useState(false);
 
   const [selectedMethod, setSelectedMethod] = useState<string>("");
-  const [dueDate, setDueDate] = useState<string>("15");
-  const [paymentMethod, setPaymentMethod] = useState<string>("Cartão de crédito final 6613");
+  const [pagamentos, setPagamentos] = useState<paymentType[]>([]);
+  const [dueDate, setDueDate] = useState<string>(""); // Inicialmente vazio
+  const [paymentMethod, setPaymentMethod] = useState<string>("");
 
   const [cardData, setCardData] = useState({
     name: "",
@@ -78,17 +81,42 @@ const Payments = () => {
     address: "",
   });
 
-  const handleSavePaymentMethod = () => {
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info',
+    duration = 3000
+  ) => {
+    toast[type](message, {
+      position: "bottom-right",
+      autoClose: duration,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: type !== 'info',
+      draggable: true,
+      style: { backgroundColor: "#444", color: "white" },
+    });
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [pagamentos, metodo, vencimento] = await Promise.all([
+          PaymentsApi.getPayments(TOKEN),
+          PaymentsApi.getPaymentMethod(TOKEN),
+          PaymentsApi.getDueDate(TOKEN),
+        ]);
+        setPagamentos(pagamentos);
+        setPaymentMethod(metodo);
+        setDueDate(vencimento);
+      } catch (err: any) {
+        showToast(err.message || "Erro ao carregar dados de pagamento", "error");
+      }
+    })();
+  }, []);
+
+  const handleSavePaymentMethod = async () => {
     if (selectedMethod === "") {
-      toast.error("Por favor, selecione um meio de pagamento", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        style: { backgroundColor: "#444", color: "white" }
-      });
+      showToast("Por favor, selecione um meio de pagamento", "error");
       return;
     }
 
@@ -98,30 +126,33 @@ const Payments = () => {
       const camposVazios = camposObrigatorios.filter(campo => !cardData[campo].trim());
 
       if (camposVazios.length > 0) {
-        toast.error("Preencha todos os campos do cartão de crédito", {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          style: { backgroundColor: "#444", color: "white" }
-        });
+        showToast("Preencha todos os campos do cartão de crédito", "error");
         return;
       }
+    }
 
-      setPaymentMethod(`Cartão de crédito final ${cardData.number.slice(-4)}`);
-    } else {
-      const metodoSelecionado = METODOS_PAGAMENTO.find(m => m.value === selectedMethod);
-      setPaymentMethod(metodoSelecionado?.label || "");
+    try {
+      await PaymentsApi.updatePaymentMethod(TOKEN, selectedMethod, selectedMethod === "credit" ? cardData : undefined);
+
+      const novoMetodo = await PaymentsApi.getPaymentMethod(TOKEN);
+      setPaymentMethod(novoMetodo);
+      setOpenPaymentModal(false);
+      showToast("Forma de pagamento atualizada com sucesso!", "success");
+    } catch (err: any) {
+      showToast(err.message || "Erro ao atualizar forma de pagamento", "error");
     }
 
     setOpenPaymentModal(false);
   };
 
-  const handleSaveDueDate = () => {
-    setDueDate(dueDate);
-    setOpenDueDateModal(false);
+  const handleSaveDueDate = async () => {
+    try {
+      await PaymentsApi.updateDueDate(TOKEN, dueDate);
+      showToast("Data de vencimento atualizada!", "success");
+      setOpenDueDateModal(false);
+    } catch (err: any) {
+      showToast(err.message || "Erro ao atualizar vencimento", "error");
+    }
   };
 
   return (
@@ -134,7 +165,7 @@ const Payments = () => {
           </TitleCard>
 
           <PaymentsDiv>
-            {PAGAMENTOS.map((p, i) => (
+            {pagamentos.map((p, i) => (
               <PaymentCard key={i}>
                 <PaymentInfo>
                   <div><strong>{p.mes}</strong></div>
