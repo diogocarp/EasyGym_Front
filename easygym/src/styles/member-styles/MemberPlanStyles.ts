@@ -18,7 +18,6 @@ const TitleBox = styled.div`
 const Title = styled.h3`
     color:white;
     text-align:left;
-    padding-left:10px;
     font-weight:500
 `
 
@@ -114,4 +113,22 @@ const PlansSection = styled.section`
   }
 `;
 
-export { PlanContainer, Plan, PlanText, InfoIcon, Container, TitleBox, Title, Button, Icon, PlanList, PlanListItem, PlansSection };
+const PlanCard = styled.div`
+  background: #333;
+  padding: 30px;
+  border-radius: 2px;
+  text-align: center;
+  flex-grow: 1;
+  width:100%;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+const Descricao = styled.h5`
+    color:white;
+    text-align:left;
+    font-weight:normal
+`
+
+export { PlanContainer, Plan, PlanText, InfoIcon, Container, TitleBox, Title, Button, Icon, PlanList, PlanListItem, PlansSection, PlanCard, Descricao };

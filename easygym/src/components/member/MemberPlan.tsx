@@ -1,111 +1,305 @@
 import { useTheme, useMediaQuery } from "@mui/material";
-import { 
-  Plan, 
-  PlanContainer, 
-  PlanText, 
-  InfoIcon, 
-  Container, 
-  TitleBox, 
-  Title, 
-  Button, 
-  Icon, 
-  PlanList, 
-  PlanListItem, 
-  PlansSection 
+import { useEffect, useState } from "react";
+import {
+  Plan,
+  PlanContainer,
+  PlanText,
+  InfoIcon,
+  Container,
+  TitleBox,
+  Title,
+  Button,
+  Icon,
+  PlanList,
+  PlanListItem,
+  PlansSection,
+  PlanCard,
+  Descricao
 } from "../../styles/member-styles/MemberPlanStyles";
 import ok from "../../assets/img/home-assets/green-ok.png";
 import x from "../../assets/img/home-assets/red-x.png";
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import { toast, ToastContainer } from 'react-toastify';
+import { TOKEN } from '../../api/Token';
+import { PlansApi } from '../../api/PlanApi';
 
-interface Feature {
-    name: String;
-    value: Boolean;
-}
+const modalStyle = {
+  position: 'absolute', top: '50%', left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: '#333', boxShadow: 24, p: 4,
+  borderRadius: "8px", width: "600px"
+};
 
 interface Plan {
-    id: number;
-    title: String;
-    description: String;
-    value: number;
-    features: Feature [];
-    fidelity: String;
-    startDate: String;
-    endDate: String;
+  id: number;
+  title: string;
+  description: string;
+  value: number;
+  features: Feature[];
+  fidelity: string;
+  startDate?: string;
+  endDate?: string;
 }
 
-export const plan: Plan =
-  {
-    id: 1,
-    title: "TotalFit",
-    description: "Treine na unidade com diversos beneficios únicos e atendimento customizado",
-    value: 129.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: true },
-      { name: "Consultas com Nutricionista", value: true },
-      { name: "Personal Trainer", value: true },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "12 meses de fidelidade",
-    startDate: "01/01/2025",
-    endDate: "31/12/2025"
-  };
+interface Feature {
+  name: string;
+  value: boolean;
+}
+
 
 const MemberPlan = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down(900)); 
+  const isMobile = useMediaQuery(theme.breakpoints.down(900));
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [preSelectedPlan, setPreSelectedPlan] = useState<Plan | null>(null);
+  const [confirmSelectionModal, setConfirmSelectionModal] = useState(false);
+  const [agreeWithTerms, setAgreeWithTerms] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [isConvinceModal, setIsConvinceModal] = useState(false);
+  const [agreeWithCancelTerms, setAgreeWithCancelTerms] = useState(false);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const fetchedPlans = await PlansApi.getPlans();
+        setPlans(fetchedPlans);
+      } catch (e) {
+        showToast("Erro ao carregar planos.", "error");
+      }
+    };
+
+    const fetchUserPlan = async () => {
+      try {
+        const plan = await PlansApi.getUserPlan(TOKEN);
+        setSelectedPlan(plan);
+      } catch (e) {
+        showToast("Erro ao carregar plano do usuário.", "error");
+      }
+    };
+
+    fetchPlans();
+    fetchUserPlan();
+  }, []);
+
+  const handleSelect = (plan: Plan) => {
+    setPreSelectedPlan(plan);
+    setConfirmSelectionModal(true);
+  };
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info', duration = 3000) => {
+    toast[type](message, {
+      position: "bottom-right",
+      autoClose: duration,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: type !== 'info',
+      draggable: true,
+      style: { backgroundColor: "#444", color: "white" },
+    });
+  };
+
+  const confirmPlanSelection = async () => {
+    if (!agreeWithTerms || !preSelectedPlan) {
+      showToast("Por favor, aceite os termos para continuar.", "error");
+      return;
+    }
+
+    try {
+      await PlansApi.setUserPlan(TOKEN, preSelectedPlan);
+      setSelectedPlan(preSelectedPlan);
+      showToast("Plano contratado com sucesso!", "success");
+    } catch (err: any) {
+      showToast(err.message || "Erro ao contratar plano", "error");
+    } finally {
+      setConfirmSelectionModal(false);
+      setAgreeWithTerms(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (!selectedPlan) return;
+
+    const noFidelity = selectedPlan.fidelity.trim() === "" || selectedPlan.fidelity.trim().toLowerCase() === "sem fidelidade";
+    if (noFidelity) setIsConvinceModal(true);
+    else setOpenConfirmModal(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!selectedPlan) return;
+    if (!agreeWithCancelTerms && openConfirmModal) {
+      showToast("Por favor, confirme o cancelamento antes de prosseguir...", "error");
+      return;
+    }
+
+    try {
+      await PlansApi.cancelPlan(TOKEN);
+      setSelectedPlan(null);
+      showToast("Plano cancelado com sucesso.", "success");
+    } catch (err: any) {
+      showToast(err.message || "Erro ao cancelar plano", "error");
+    } finally {
+      setAgreeWithCancelTerms(false);
+      setOpenConfirmModal(false);
+      setIsConvinceModal(false);
+    }
+  };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: isMobile ? "column" : "row",
-        alignItems: isMobile ? "stretch" : "flex-start",
-        gap: "20px",
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "20px" }}>
       <Container style={{ width: "100%" }}>
         <TitleBox>
           <InfoIcon fontSize="large" />
-          <Title>Meu Plano</Title>
+          <Title style={{paddingLeft: "10px"}}>Meu Plano</Title>
         </TitleBox>
 
-        <PlanContainer>
-          <PlansSection style={{ flex: 1 }}>
+        {!selectedPlan && (
+          <PlansSection style={{ flexDirection: isMobile ? "column" : "row", padding: "10px" }}>
+            {plans.map((plan) => (
+              <PlanCard key={plan.id}>
+                <div>
+                  <Title>Plano {plan.title}</Title><br />
+                  <Descricao>{plan.description}</Descricao>
+                </div>
+                <div>
+                  <PlanList>
+                    {plan.features.map((feature, idx) => (
+                      <PlanListItem key={idx}>
+                        <Icon src={feature.value ? ok : x} /> {feature.name}
+                      </PlanListItem>
+                    ))}
+                  </PlanList>
+                  <hr style={{ marginBottom: "10px", borderColor: "#898989" }} />
+                  <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>R$ {plan.value} por mês</p></center>
+                  <center><p style={{ color: "#ccc", marginBottom: 10, fontSize: 12, fontStyle: "italic" }}>{plan.fidelity}</p></center>
+                  <Button onClick={() => handleSelect(plan)}>Quero Esse</Button>
+                </div>
+              </PlanCard>
+            ))}
+          </PlansSection>
+        )}
+
+        {selectedPlan && !confirmSelectionModal && (
+          <PlanContainer>
+            <PlansSection style={{ flex: 1 }}>
+              <Plan
+                style={{
+                  display: isMobile ? "flex" : "grid",
+                  flexDirection: isMobile ? "column" : undefined,
+                  alignContent: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Title style={{ textAlign: "center" }}>Plano {selectedPlan.title}</Title>
+                <PlanText>{selectedPlan.fidelity}</PlanText>
+                {selectedPlan.startDate && selectedPlan.endDate && (
+                  <PlanText>Período de {selectedPlan.startDate} à {selectedPlan.endDate}</PlanText>
+                )}
+                <Button style={{ marginTop: "10px", alignSelf: "center" }} onClick={handleCancel}>
+                  Cancelar Plano
+                </Button>
+              </Plan>
+            </PlansSection>
+
             <Plan
               style={{
+                flex: 1,
                 display: isMobile ? "flex" : "grid",
                 flexDirection: isMobile ? "column" : undefined,
-                alignContent: "center",
                 justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <Title style={{ textAlign: "center" }}>Plano {plan.title}</Title>
-              <PlanText>{plan.fidelity}</PlanText>
-              <PlanText>Período de {plan.startDate} à {plan.endDate}</PlanText>
-              <Button style={{ marginTop: "10px", alignSelf: "center" }}>
-                Cancelar Plano
-              </Button>
-            </Plan>
-          </PlansSection>
-
-          <Plan
-            style={{
-              flex: 1,
-              display: isMobile ? "flex" : "grid",
-              flexDirection: isMobile ? "column" : undefined,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <PlanList>
-              {plan.features.map((feature, idx) => (
-                <PlanListItem key={idx}>
+              <PlanList>
+                {selectedPlan.features.map((feature, idx) => (
+                  <PlanListItem key={idx}>
                     <Icon src={feature.value ? ok : x} /> {feature.name}
-                </PlanListItem>
+                  </PlanListItem>
                 ))}
-            </PlanList>
-          </Plan>
-        </PlanContainer>
+              </PlanList>
+            </Plan>
+          </PlanContainer>
+        )}
       </Container>
+
+      {/* Modal com fidelidade */}
+      <Modal open={openConfirmModal} onClose={() => setOpenConfirmModal(false)}>
+        <Box sx={modalStyle}>
+          <center><h3 style={{ color: "white" }}>Você está em um plano com fidelidade. Tem certeza que deseja cancelar?</h3></center>
+          <br/>
+          <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>Ao confirmar, será aplicada uma multa de 15% sobre o valor restante das mensalidades.</p></center>
+          <br/>
+          <label style={{ display: "flex", color: "white", alignItems: "center", fontSize: 13 }}>
+            <input
+              type="checkbox"
+              checked={agreeWithCancelTerms}
+              onChange={() => setAgreeWithCancelTerms(!agreeWithCancelTerms)}
+              style={{ marginRight: "10px" }}
+            />
+            Sim, estou ciente da multa de 15% e desejo prosseguir com o cancelamento.
+          </label>
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+            <Button onClick={handleConfirmCancel}>Confirmar</Button>
+            <Button onClick={() => setOpenConfirmModal(false)}>Cancelar</Button>
+          </div>
+        </Box>
+      </Modal>
+
+      {/* Modal sem fidelidade (convencimento) */}
+      <Modal open={isConvinceModal} onClose={() => setIsConvinceModal(false)}>
+        <Box sx={modalStyle}>
+          <center><h3 style={{ color: "white" }}>Tem certeza que deseja cancelar seu plano?</h3></center>
+          <br/>
+          <p style={{ color: "#ccc", fontSize: 14, textAlign: "center" }}>
+            Você ainda pode aproveitar todos os benefícios! Estamos sempre evoluindo para te oferecer a melhor experiência. Que tal continuar com a gente?
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "2rem" }}>
+            <Button onClick={handleConfirmCancel}>Sim, quero cancelar</Button>
+            <Button onClick={() => setIsConvinceModal(false)}>Vou continuar</Button>
+          </div>
+        </Box>
+      </Modal>
+
+      <Modal open={confirmSelectionModal} onClose={() => setConfirmSelectionModal(false)}>
+        <Box sx={modalStyle}>
+          <h3 style={{ color: "white", textAlign: "center" }}>Ótima escolha! Gostaria de prosseguir com a contratação do plano abaixo?</h3>
+          {preSelectedPlan && (
+            <PlanCard style={{ marginTop: 20, background: "#434343", paddingBottom: "10px" }}>
+              <div>
+                <Title>Plano {preSelectedPlan.title}</Title>
+                <br/>
+                <Descricao>{preSelectedPlan.description}</Descricao>
+                <PlanList>
+                  {preSelectedPlan.features.map((feature, idx) => (
+                    <PlanListItem key={idx}>
+                      <Icon src={feature.value ? ok : x} /> {feature.name}
+                    </PlanListItem>
+                  ))}
+                </PlanList>
+                <hr style={{ marginBottom: "10px", borderColor: "#898989" }} />
+                <p style={{ color: "#fff", marginTop: 10 }}>R$ {preSelectedPlan.value} por mês</p>
+                <p style={{ color: "#ccc", fontSize: 12 }}>{preSelectedPlan.fidelity}</p>
+              </div>
+            </PlanCard>
+          )}
+          <label style={{ display: "flex", color: "white", marginTop: 20, fontSize: 13 }}>
+            <input
+              type="checkbox"
+              checked={agreeWithTerms}
+              onChange={() => setAgreeWithTerms(!agreeWithTerms)}
+              style={{ marginRight: 10 }}
+            />
+            Sim, li os <a href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" target="_blank" style={{ color: "#09f", marginLeft: 4, marginRight: 4 }}>termos e condições</a>e concordo com a contratação desse plano
+          </label>
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "2rem" }}>
+            <Button onClick={confirmPlanSelection}>Assinar</Button>
+            <Button onClick={() => setConfirmSelectionModal(false)}>Cancelar</Button>
+          </div>
+        </Box>
+      </Modal>
+
+      <ToastContainer />
     </div>
   );
 };

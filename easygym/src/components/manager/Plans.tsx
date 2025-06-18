@@ -112,7 +112,7 @@ const Plans = () => {
                 ))}
               </PlanList>
               <hr style={{ marginBottom: "10px", borderColor: "#898989" }} />
-              <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>A partir de R$ {plan.value}</p></center>
+              <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>R$ {plan.value} por mês</p></center>
               <center><p style={{ color: "#ccc", marginBottom: 10, fontSize: 12, fontStyle: "italic" }}>{plan.fidelity}</p></center>
               <Button onClick={() => handleEditClick(plan)}>Editar</Button>
             </div>
