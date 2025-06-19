@@ -10,7 +10,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 // APIs
 import { TOKEN } from '../../api/Token';
-import { UserApi } from '../../api/UserApi';
+import { UserApi } from '../../api/member/UserApi';
 
 import {
   Button,

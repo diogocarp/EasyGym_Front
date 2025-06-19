@@ -1,14 +1,16 @@
-import { useState } from "react";
-import {
-  Container, Frequency, GymIcon, Title, PlansSection,
+import { useEffect, useState } from "react";
+import { Frequency, GymIcon, Title, PlansSection,
   PlanCard, PlanList, PlanListItem, Icon, Button, Descricao, InputMasked, InputContainer
 } from "../../styles/manager-styles/PlansStyle";
 import ok from "../../assets/img/home-assets/green-ok.png";
 import x from "../../assets/img/home-assets/red-x.png";
-import { useTheme, useMediaQuery, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
+import { useTheme, useMediaQuery } from "@mui/material";
 import { AttachMoney } from "@mui/icons-material";
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
+import { toast } from "react-toastify";
+import { PlansApi } from "../../api/manager/PlansApi";
+import { TOKEN } from "../../api/Token";
 
 interface Feature {
     name: String;
@@ -24,71 +26,46 @@ interface Plan {
     fidelity: String;
 }
 
-export const plans: Plan[] = [
-  {
-    id: 1,
-    title: "TotalFit",
-    description: "Treine na unidade com diversos beneficios únicos e atendimento customizado",
-    value: 129.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: true },
-      { name: "Consultas com Nutricionista", value: true },
-      { name: "Personal Trainer", value: true },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "12 meses de fidelidade"
-  },
-  {
-    id: 2,
-    title: "Essencial",
-    description: "Nosso plano mais economico para você se exercitar quando quiser, com auxilio do nosso personal trainer",
-    value: 89.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: false },
-      { name: "Consultas com Nutricionista", value: false },
-      { name: "Personal Trainer", value: true },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "12 meses de fidelidade"
-  },
-  {
-    id: 3,
-    title: "Livre",
-    description: "Nosso plano mensal para você que não quer se comprometer, mas quer treinar em uma academia de alto padrão",
-    value: 109.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: false },
-      { name: "Consultas com Nutricionista", value: false },
-      { name: "Personal Trainer", value: false },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "Sem fidelidade"
-  },
-];
 
 const Plans = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const [plans, setPlans] = useState<Plan[]>([]);
   const [open, setOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<Plan>();
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [newValue, setNewValue] = useState("");
 
-  const handleEditClick = (plan: Plan) => {
+ const handleEditClick = (plan: Plan) => {
     setSelectedPlan(plan);
     setNewValue(plan.value.toFixed(2));
     setOpen(true);
   };
 
-  const handleSave = () => {
-    if (selectedPlan) {
-      const index = plans.findIndex(p => p.id === selectedPlan.id);
-      if (index !== -1) {
-        plans[index].value = parseFloat(newValue.replace(',', '.'));
-      }
+useEffect(() => {
+  (async () => {
+    try {
+      const data = await PlansApi.getPlans(TOKEN);
+      setPlans(data);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao carregar planos");
     }
+  })();
+}, []);
+
+const handleSave = async () => {
+  try {
+    if (!selectedPlan) return;
+
+    const updated = await PlansApi.updatePlanValue(TOKEN, selectedPlan.id, parseFloat(newValue.replace(',', '.')));
+    const updatedList = plans.map(p => p.id === updated.id ? updated : p);
+    setPlans(updatedList);
     setOpen(false);
-  };
+    toast.success("Valor atualizado com sucesso!");
+  } catch (err: any) {
+    toast.error(err.message || "Erro ao salvar alteração");
+  }
+};
 
   return (
     <div>

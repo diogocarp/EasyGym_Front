@@ -31,7 +31,7 @@ import { toast, ToastContainer } from 'react-toastify';
 
 // APIs
 import { TOKEN } from '../../api/Token';
-import { PaymentsApi } from '../../api/PaymentsApi';
+import { PaymentsApi } from '../../api/member/PaymentsApi';
 
 // === VARIÁVEIS FIXAS ===
 const VENCIMENTOS_FIXOS = ["5", "15", "27"];
@@ -55,9 +55,9 @@ const modalStyle = {
 };
 
 type paymentType = {
-    mes: string;
-    vencimento: string;
-    valor: string;
+    month: string;
+    due: string;
+    value: string;
     status: string;
 }
 
@@ -168,12 +168,12 @@ const Payments = () => {
             {pagamentos.map((p, i) => (
               <PaymentCard key={i}>
                 <PaymentInfo>
-                  <div><strong>{p.mes}</strong></div>
-                  <PaymentLabel>Vencimento {p.vencimento}</PaymentLabel>
+                  <div><strong>{p.month}</strong></div>
+                  <PaymentLabel>Vencimento {p.due}</PaymentLabel>
                 </PaymentInfo>
                 <Value>
                   <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Valor</Text>
-                  <ValueDescription>{p.valor}</ValueDescription>
+                  <ValueDescription>{p.value}</ValueDescription>
                 </Value>
                 <StatusDiv>
                   <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Status</Text>

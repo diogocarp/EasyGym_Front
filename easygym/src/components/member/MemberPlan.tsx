@@ -22,7 +22,7 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { toast, ToastContainer } from 'react-toastify';
 import { TOKEN } from '../../api/Token';
-import { PlansApi } from '../../api/PlanApi';
+import { PlansApi } from '../../api/member/PlanApi';
 
 const modalStyle = {
   position: 'absolute', top: '50%', left: '50%',

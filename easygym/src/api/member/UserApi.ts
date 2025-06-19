@@ -1,4 +1,4 @@
-import { TOKEN } from './Token';
+import { TOKEN } from '../Token';
 
 // Simula armazenamento do JSON textual do usuário
 let userJsonText = `

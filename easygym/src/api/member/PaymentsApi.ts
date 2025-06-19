@@ -1,15 +1,15 @@
-import { TOKEN } from './Token';
+import { TOKEN } from '../Token';
 
 // Simula armazenamento dos dados
-let pagamentoList = [
-  { mes: "Maio 2025", vencimento: "10/05/2025", valor: "R$ 89,99", status: "Pago" },
-  { mes: "Junho 2025", vencimento: "10/06/2025", valor: "R$ 89,99", status: "Pago" },
-  { mes: "Julho 2025", vencimento: "10/07/2025", valor: "R$ 89,99", status: "Aguardando Pagamento" },
-  { mes: "Agosto 2025", vencimento: "10/08/2025", valor: "R$ 89,99", status: "A vencer" },
+let paymentList = [
+  { month: "Maio 2025", due: "10/05/2025", value: "R$ 89,99", status: "Pago" },
+  { month: "Junho 2025", due: "10/06/2025", value: "R$ 89,99", status: "Pago" },
+  { month: "Julho 2025", due: "10/07/2025", value: "R$ 89,99", status: "Aguardando Pagamento" },
+  { month: "Agosto 2025", due: "10/08/2025", value: "R$ 89,99", status: "A vencer" },
 ];
 
-let metodoPagamento = "Cartão de crédito final 6613";
-let dataVencimento = "15";
+let paymentMethod = "Cartão de crédito final 6613";
+let dueDate = "15";
 
 export const PaymentsApi = {
   getPayments: async (auth: string) => {
@@ -18,7 +18,7 @@ export const PaymentsApi = {
     const responseCode = 200;
 
     if (responseCode === 200) {
-      return pagamentoList;
+      return paymentList;
     } else {
       throw new Error("Erro ao buscar pagamentos");
     }
@@ -56,13 +56,13 @@ export const PaymentsApi = {
       console.log("Simulando envio do cartão:", cardData);
 
       const lastDigits = cardData.number.slice(-4);
-      metodoPagamento = `Cartão de crédito final ${lastDigits}`;
+      paymentMethod = `Cartão de crédito final ${lastDigits}`;
     } else {
       const labels: any = {
         boleto: "Boleto",
         pix: "Pix",
       };
-      metodoPagamento = labels[method] || "Outro método";
+      paymentMethod = labels[method] || "Outro método";
     }
 
     return { success: true };
@@ -74,7 +74,7 @@ export const PaymentsApi = {
     const responseCode = 200;
 
     if (responseCode === 200) {
-      return metodoPagamento;
+      return paymentMethod;
     } else {
       throw new Error("Erro ao buscar forma de pagamento");
     }
@@ -87,10 +87,10 @@ export const PaymentsApi = {
     const responseCode = 200;
 
     if (responseCode === 200) {
-      dataVencimento = newDueDate;
+      dueDate = newDueDate;
       return { success: true };
     } else {
-      throw new Error("Erro ao atualizar data de vencimento");
+      throw new Error("Erro ao atualizar data de due");
     }
   },
 
@@ -100,9 +100,9 @@ export const PaymentsApi = {
     const responseCode = 200;
 
     if (responseCode === 200) {
-      return dataVencimento;
+      return dueDate;
     } else {
-      throw new Error("Erro ao buscar data de vencimento");
+      throw new Error("Erro ao buscar data de due");
     }
   },
 };
