@@ -16,7 +16,6 @@ import { Close } from "@mui/icons-material";
 import { ValidateInputType, regexPatterns } from "./constants/MaskConstants";
 import User from "../models/User";
 import { toast, ToastContainer } from "react-toastify";
-import api, { postUser } from "../api/Api";
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -111,12 +110,6 @@ const RegisterPage = () => {
                 style: { backgroundColor: "#444", color: "white" }
             });
             return;
-        }
-
-        try{
-            postUser(api, user);
-        }catch(e){
-            console.log(e)
         }
 
         toast.success("Cadastro realizado com sucesso!", {

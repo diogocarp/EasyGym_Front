@@ -70,6 +70,7 @@ const Plans = () => {
     
     const handleSelect = (plan: Plan) => {
         setSelectedPlan(plan);
+        console.log(selectedPlan)
         window.location.href='/login'
     };
 
