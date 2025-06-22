@@ -9,27 +9,13 @@ import { AttachMoney } from "@mui/icons-material";
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { toast } from "react-toastify";
-import { PlansApi } from "../../api/manager/PlansApi";
-import { TOKEN } from "../../api/Token";
+import { Plan, PlansApi } from "../../api/manager/PlansApi";
 
-interface Feature {
-    name: String;
-    value: Boolean;
-}
-
-interface Plan {
-    id: number;
-    title: String;
-    description: String;
-    value: number;
-    features: Feature [];
-    fidelity: String;
-}
-
+import Cookies from 'js-cookie';
 
 const Plans = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down(1000));
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [open, setOpen] = useState(false);
@@ -38,14 +24,16 @@ const Plans = () => {
 
  const handleEditClick = (plan: Plan) => {
     setSelectedPlan(plan);
-    setNewValue(plan.value.toFixed(2));
+    setNewValue(plan.price.toString()+".00");
     setOpen(true);
   };
+
+  const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
 
 useEffect(() => {
   (async () => {
     try {
-      const data = await PlansApi.getPlans(TOKEN);
+      const data = await PlansApi.getPlans(refreshToken);
       setPlans(data);
     } catch (err: any) {
       toast.error(err.message || "Erro ao carregar planos");
@@ -57,7 +45,7 @@ const handleSave = async () => {
   try {
     if (!selectedPlan) return;
 
-    const updated = await PlansApi.updatePlanValue(TOKEN, selectedPlan.id, parseFloat(newValue.replace(',', '.')));
+    const updated = await PlansApi.updatePlanValue(refreshToken, selectedPlan.id, parseFloat(newValue.replace(',', '.')));
     const updatedList = plans.map(p => p.id === updated.id ? updated : p);
     setPlans(updatedList);
     setOpen(false);
@@ -77,20 +65,20 @@ const handleSave = async () => {
         {plans.map((plan) => (
           <PlanCard key={plan.id}>
             <div>
-              <Title>Plano {plan.title}</Title><br />
+              <Title>Plano {plan.name}</Title><br />
               <Descricao>{plan.description}</Descricao>
             </div>
             <div>
               <PlanList>
                 {plan.features.map((feature, idx) => (
                   <PlanListItem key={idx}>
-                    <Icon src={feature.value ? ok : x} /> {feature.name}
+                    <Icon src={feature.available ? ok : x} /> {feature.name}
                   </PlanListItem>
                 ))}
               </PlanList>
               <hr style={{ marginBottom: "10px", borderColor: "#898989" }} />
-              <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>R$ {plan.value} por mês</p></center>
-              <center><p style={{ color: "#ccc", marginBottom: 10, fontSize: 12, fontStyle: "italic" }}>{plan.fidelity}</p></center>
+              <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>R$ {plan.price} por mês</p></center>
+              <center><p style={{ color: "#ccc", marginBottom: 10, fontSize: 12, fontStyle: "italic" }}>{plan.duration_months != 0 ? `${plan.duration_months} meses de fidelidade` : "Sem fidelidade" } </p></center>
               <Button onClick={() => handleEditClick(plan)}>Editar</Button>
             </div>
           </PlanCard>

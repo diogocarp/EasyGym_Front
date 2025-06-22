@@ -1,6 +1,6 @@
 import { Container, Frequency, Title } from "../../styles/manager-styles/DashboardStyle";
 import {
-  Actions, Button, Card, Grid, Member, MemberInfo, MembersIcon, FilterContainer, SearchButton, Input, InputMasked, InputContainer, InputContainerEdit
+  Actions, Button, Card, Grid, Member, MemberInfo, MembersIcon, FilterContainer, Input, InputMasked, InputContainer, InputContainerEdit
 } from "../../styles/manager-styles/MembersStyle";
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import PersonIcon from '@mui/icons-material/Person';
@@ -10,8 +10,9 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { useTheme, useMediaQuery, Switch, FormControlLabel } from "@mui/material";
 import { MemberType, MembersApi } from "../../api/manager/MembersApi";
-import { TOKEN } from "../../api/Token";
 import { toast } from "react-toastify";
+
+import Cookies from 'js-cookie';
 
 const modalStyle = {
   position: 'absolute',
@@ -25,25 +26,31 @@ const modalStyle = {
 
 const Members = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const [students, setStudents] = useState<MemberType[]>([]);
-const [filteredStudents, setFilteredStudents] = useState<MemberType[]>([]);
-
-useEffect(() => {
-  (async () => {
-    try {
-      const data = await MembersApi.getMembers(TOKEN);
-      setStudents(data);
-      setFilteredStudents(data);
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao carregar alunos");
-    }
-  })();
-}, []);
+  const isMobile = useMediaQuery(theme.breakpoints.down(1000));
 
   const [name, setName] = useState("");
   const [cpf, setCPF] = useState("");
+  
+  const [students, setStudents] = useState<MemberType[]>([]);
+const [filteredStudents, setFilteredStudents] = useState<MemberType[]>([]);
+
+const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
+
+useEffect(() => {
+  const delayDebounce = setTimeout(async () => {
+    try {
+      const filtered = await MembersApi.filterMembers(refreshToken, {
+        full_name__icontains: name,
+        customer_doc__icontains: cpf.replace(/[.-]/g, "")
+      });
+      setFilteredStudents(filtered);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao filtrar alunos");
+    }
+  }, 100); 
+  return () => clearTimeout(delayDebounce);
+}, [name, cpf]);
+
 
   const [editId, setEditId] = useState(-1);
   const [editName, setEditName] = useState("");
@@ -78,11 +85,9 @@ useEffect(() => {
       status: editStatus
     };
 
-    const saved = await MembersApi.updateMember(TOKEN, updated);
-
-    const updatedList = students.map(s => s.id === saved.id ? saved : s);
-    setStudents(updatedList);
-    setFilteredStudents(updatedList);
+    await MembersApi.updateMember(refreshToken, updated);
+    const membersUpdated = await MembersApi.getMembers(refreshToken)
+    setStudents(membersUpdated)    
     setOpenEditModal(false);
     toast.success("Aluno atualizado com sucesso!");
   } catch (err: any) {
@@ -99,15 +104,6 @@ useEffect(() => {
       .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
   };
 
-  const handleFilter = async () => {
-  try {
-    const filtered = await MembersApi.filterMembers(TOKEN, name, cpf);
-    setFilteredStudents(filtered);
-  } catch (err: any) {
-    toast.error(err.message || "Erro ao filtrar alunos");
-  }
-};
-
 
   useEffect(() => {
     setFilteredStudents(students);
@@ -121,7 +117,7 @@ useEffect(() => {
           <Title>Alunos</Title>
         </Frequency>
         <Member>
-          <FilterContainer style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "20px", padding: "15px" }}>
+            <FilterContainer style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "20px", padding: "15px" }}>
             <InputContainer style={{ flexGrow: "1" }}>
               <PersonIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
               <Input type="text" style={{ paddingLeft: "45px" }} placeholder="Digite o nome do aluno" onChange={(e) => setName(e.target.value)} />
@@ -134,10 +130,8 @@ useEffect(() => {
                 unmask={true}
                 onAccept={(value) => setCPF(formatCPF(value))}
                 placeholder="Digite o CPF do aluno"
-              >
-              </InputMasked>
+              />
             </InputContainer>
-            <SearchButton onClick={handleFilter}>Filtrar</SearchButton>
           </FilterContainer>
 
           <Grid style={{gridTemplateColumns: isMobile ? "repeat(1, 1fr)" : "repeat(4, 1fr)"}}>
@@ -158,7 +152,6 @@ useEffect(() => {
         </Member>
       </Container>
 
-      {/* Modal de Edição */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box sx={modalStyle}>
           <h2 style={{ color: "white" }}>Editar Aluno</h2>

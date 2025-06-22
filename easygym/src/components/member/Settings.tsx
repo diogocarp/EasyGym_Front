@@ -7,6 +7,8 @@ import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
+import logoDataUrl from "../../assets/img/home-assets/logo-quadrado-v2.png";
+
 // APIs
 import { UserApi } from '../../api/member/UserApi';
 import Cookies from 'js-cookie';
@@ -116,7 +118,8 @@ const Setting = () => {
     }
 
     try {
-      const result = await UserApi.getAccessLogsPdf(refreshToken, id, dataInicio, dataFim);
+      const result = await UserApi.getAccessLogsPdf(refreshToken, id, dataInicio, dataFim, logoDataUrl);
+      console.log(result)
       //window.open(result.url, "_blank");
       showToast("Relatório gerado com sucesso!", "success", 4000);
     } catch (err: any) {

@@ -1,80 +1,99 @@
-import { TOKEN } from "../Token";
-
 export interface Feature {
   name: string;
-  value: boolean;
+  available: boolean;
 }
 
 export interface Plan {
   id: number;
-  title: string;
+  name: string;
   description: string;
-  value: number;
+  price: number;
   features: Feature[];
-  fidelity: string;
+  duration_months: number;
+  loyalty_months:number;
 }
 
-let plans: Plan[] = [
-  {
-    id: 1,
-    title: "TotalFit",
-    description: "Treine na unidade com diversos beneficios únicos e atendimento customizado",
-    value: 129.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: true },
-      { name: "Consultas com Nutricionista", value: true },
-      { name: "Personal Trainer", value: true },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "12 meses de fidelidade",
-  },
-  {
-    id: 2,
-    title: "Essencial",
-    description: "Nosso plano mais economico para você se exercitar quando quiser, com auxilio do nosso personal trainer",
-    value: 89.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: false },
-      { name: "Consultas com Nutricionista", value: false },
-      { name: "Personal Trainer", value: true },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "12 meses de fidelidade",
-  },
-  {
-    id: 3,
-    title: "Livre",
-    description: "Nosso plano mensal para você que não quer se comprometer, mas quer treinar em uma academia de alto padrão",
-    value: 109.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: false },
-      { name: "Consultas com Nutricionista", value: false },
-      { name: "Personal Trainer", value: false },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "Sem fidelidade",
-  },
-];
-
-const delay = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const PlansApi = {
+
+getNewAccessToken: async (refreshToken: string): Promise<string> => {
+    const res = await fetch("/api/token/refresh/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({"refresh": refreshToken}),
+    });
+
+    console.log(JSON.stringify({"refresh": refreshToken}));
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao renovar token");
+    }
+
+    const data = await res.json();
+    return data.access;
+  },
+
   getPlans: async (auth: string): Promise<Plan[]> => {
-    if (auth !== TOKEN) throw new Error("Unauthorized");
-    await delay();
-    return plans;
+
+    const accessToken = await PlansApi.getNewAccessToken(auth);
+
+    const response = await fetch("/api/plans/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Erro ao carregar planos.");
+    }
+
+    const rawPlans = await response.json();
+
+    return rawPlans.map((raw: Plan): Plan => ({
+      id: raw.id,
+      name: raw.name,
+      description: raw.description,
+      price: raw.price,
+      features: raw.features,
+      duration_months: raw.duration_months,
+      loyalty_months: raw.loyalty_months
+    }));
   },
 
-  updatePlanValue: async (auth: string, id: number, newValue: number): Promise<Plan> => {
-    if (auth !== TOKEN) throw new Error("Unauthorized");
-    await delay();
+    updatePlanValue: async (auth: string, id: number, newValue: number): Promise<Plan> => {
 
-    const index = plans.findIndex((p) => p.id === id);
-    if (index === -1) throw new Error("Plano não encontrado");
+    const accessToken = await PlansApi.getNewAccessToken(auth);
 
-    plans[index].value = newValue;
-    return plans[index];
-  },
+    const response = await fetch(`/api/plans/${id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ price: newValue.toFixed(2) })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Erro ao atualizar valor do plano.");
+    }
+
+    const updated = await response.json();
+
+    return {
+      id: updated.id,
+      name: updated.name,
+      description: updated.description,
+      price: updated.price,
+      features: updated.features,
+      duration_months: updated.duration_months,
+      loyalty_months: updated.loyalty_months
+    };
+  }
 };
-
 
