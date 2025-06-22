@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-
 import { useMediaQuery, useTheme } from '@mui/material';
 import { Lock } from '@mui/icons-material';
 import PersonIcon from '@mui/icons-material/Person';
@@ -9,8 +8,8 @@ import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 // APIs
-import { TOKEN } from '../../api/Token';
 import { UserApi } from '../../api/member/UserApi';
+import Cookies from 'js-cookie';
 
 import {
   Button,
@@ -36,7 +35,6 @@ const Setting = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
   const [formData, setFormData] = useState<any>({});
-
   const [senhaAntiga, setSenhaAntiga] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmaSenha, setConfirmaSenha] = useState('');
@@ -59,26 +57,28 @@ const Setting = () => {
     });
   };
 
+  const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
+
   useEffect(() => {
     (async () => {
       try {
-        const user = await UserApi.getUser(TOKEN);
+        const user = await UserApi.getUser(refreshToken);
         setFormData(user);
       } catch (err: any) {
         showToast(err.message || "Erro desconhecido", "error");
       }
     })();
-  }, []);
+  }, [refreshToken]);
 
   const handleUpdateUserData = async () => {
-    const { name, tel, birth } = formData;
-    if (!name || !tel || !birth) {
+    const { full_name, phone, date_of_birth, id } = formData;
+    if (!full_name || !phone || !date_of_birth || !id) {
       showToast("Por favor, preencha todos os campos.", "error", 5000);
       return;
     }
 
     try {
-      await UserApi.updateUser(TOKEN, { name, tel, birth });
+      await UserApi.updateUser(refreshToken, id, formData);
       showToast("Dados atualizados com sucesso!", "success");
     } catch (err: any) {
       showToast(err.message || "Erro desconhecido", "error");
@@ -97,7 +97,7 @@ const Setting = () => {
     }
 
     try {
-      await UserApi.changePassword(TOKEN, senhaAntiga, novaSenha);
+      await UserApi.changePassword(refreshToken, senhaAntiga, novaSenha, confirmaSenha);
       setSenhaAntiga('');
       setNovaSenha('');
       setConfirmaSenha('');
@@ -108,14 +108,16 @@ const Setting = () => {
   };
 
   const handleFilterLogs = async () => {
+    const { id } = formData;
+
     if (!dataInicio || !dataFim) {
       showToast("Preencha as datas de início e fim para gerar o relatório.", "error", 5000);
       return;
     }
 
     try {
-      const result = await UserApi.getReport(TOKEN, dataInicio, dataFim);
-      window.open(result.url, "_blank");
+      const result = await UserApi.getAccessLogsPdf(refreshToken, id, dataInicio, dataFim);
+      //window.open(result.url, "_blank");
       showToast("Relatório gerado com sucesso!", "success", 4000);
     } catch (err: any) {
       showToast(err.message || "Erro desconhecido", "error");
@@ -130,7 +132,7 @@ const Setting = () => {
       width: "100%",
       boxSizing: "border-box"
     }}>
-      <Container style={{ width: "100%", padding: "10px 20px" }}>
+      <Container style={{ width: "100%" }}>
         <TitleBox>
           <SettingsIcon fontSize="large" />
           <Title>Configurações</Title>
@@ -144,11 +146,11 @@ const Setting = () => {
                 <PersonIcon style={{ position: "absolute", marginLeft: "10px", color: "white" }} />
                 <Input
                   style={{ paddingLeft: "45px" }}
-                  name="name"
+                  name="full_name"
                   type="text"
-                  placeholder="Nome Completo"
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Nome"
+                  value={formData.full_name || ''}
+                  onChange={e => setFormData({ ...formData, full_name: e.target.value })}
                 />
               </InputContainer>
               <InputContainer>
@@ -158,7 +160,7 @@ const Setting = () => {
                   name="email"
                   type="email"
                   placeholder="Email"
-                  value={formData.email}
+                  value={formData.email || ''}
                   disabled
                 />
               </InputContainer>
@@ -172,7 +174,7 @@ const Setting = () => {
                   mask="000.000.000-00"
                   unmask={true}
                   placeholder="CPF"
-                  value={formData.cpf}
+                  value={formData.customer_doc || ''}
                   disabled
                 />
               </InputContainer>
@@ -183,8 +185,8 @@ const Setting = () => {
                   mask="(00) 00000-0000"
                   unmask={true}
                   placeholder="Telefone"
-                  value={formData.tel}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, tel: e.target.value })}
+                  value={formData.phone || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </InputContainer>
               <InputContainer>
@@ -192,8 +194,8 @@ const Setting = () => {
                 <Input
                   style={{ paddingLeft: "45px" }}
                   type="date"
-                  value={formData.birth}
-                  onChange={e => setFormData({ ...formData, birth: e.target.value })}
+                  value={formData.date_of_birth || ''}
+                  onChange={e => setFormData({ ...formData, date_of_birth: e.target.value })}
                 />
               </InputContainer>
             </Row>

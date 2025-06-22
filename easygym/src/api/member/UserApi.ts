@@ -1,121 +1,147 @@
-import { TOKEN } from '../Token';
-
-// Simula armazenamento do JSON textual do usuário
-let userJsonText = `
-{
-  "name": "Bruno Ferreira da Silva",
-  "email": "brunofs99@hotmail.com",
-  "cpf": "123.456.789-09",
-  "tel": "+55 (11) 94572-6687",
-  "birth": "2000-01-01"
-}`;
+import jsPDF from "jspdf";
 
 export const UserApi = {
-  // Simula GET /user
-  getUser: async (auth: string) => {
-    // Verifica se o token está ok
-    if (auth !== TOKEN) throw new Error("Unauthorized");
+  // GET /api/users/me/
+  getUser: async (refreshToken: string) => {
+    const accessToken = await UserApi.getNewAccessToken(refreshToken);
+    const res = await fetch("/api/users/me/", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-    // Realiza a "chamada" da API e recebe response
-    await delay();
-    const responseCode = 200;
-    const responseText = userJsonText;
-
-    if (responseCode === 200) {
-      // Converte response para objeto e retorna
-      const userObj = JSON.parse(responseText);
-      return userObj;
-    }else {
-      // Lança erro com mensagem
-      throw new Error("Erro ao buscar usuário");
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Erro ao buscar usuário");
     }
+
+    const user = await res.json();
+    const { full_name, email, phone, customer_doc, date_of_birth, id } = user;
+    return { full_name, email, phone, customer_doc, date_of_birth, id };
   },
 
-  // Simula POST /user/update
-  updateUser: async (auth: string, updatedData: Partial<UserData>) => {
-    // Verifica se o token está ok
-    if (auth !== TOKEN) throw new Error("Unauthorized");
+  // PATCH /api/users/{id}/
+  updateUser: async (
+    refreshToken: string,
+    id: number,
+    updatedData: { full_name: string; phone: string; date_of_birth: string }
+  ) => {
+    const accessToken = await UserApi.getNewAccessToken(refreshToken);
+    const res = await fetch(`/api/users/${id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(updatedData),
+    });
 
-    // Realiza a "chamada" da API e recebe os dados atuais
-    await delay();
-    const responseCode = 200;
-    const responseText = userJsonText;
-
-    if (responseCode === 200) {
-      // Converte os dados atuais, aplica alterações e salva o novo JSON como texto
-      const currentData = JSON.parse(responseText);
-      const newData = { ...currentData, ...updatedData };
-      userJsonText = JSON.stringify(newData);
-
-      // Retorna sucesso
-      return { success: true };
-    }else {
-      // Lança erro com mensagem
-      throw new Error("Erro ao atualizar usuário");
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao atualizar usuário");
     }
+
+    return await res.json();
   },
 
-  // Simula POST /user/password
-  changePassword: async (auth: string, oldPass: string, newPass: string) => {
-    // Verifica se o token está ok
-    if (auth !== TOKEN) throw new Error("Unauthorized");
+  // POST /api/users/change-password/
+  changePassword: async (
+    refreshToken: string,
+    current_password: string,
+    new_password: string,
+    password_confirmation: string
+  ) => {
+    const accessToken = await UserApi.getNewAccessToken(refreshToken);
+    const res = await fetch("/api/users/change-password/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ current_password, new_password, password_confirmation }),
+    });
 
-    // Verifica se os dados estão completos
-    if (!oldPass || !newPass) throw new Error("Invalid input");
-
-    // Realiza a "chamada" da API e envia os dados de senha
-    await delay();
-    const responseCode = 200;
-    const passwordPayload = JSON.stringify({ oldPass, newPass });
-
-    // Apenas exibe o payload (simulação de envio)
-    console.log("Simulando envio de senha:", passwordPayload);
-
-    if (responseCode === 200) {
-      // Retorna sucesso
-      return { success: true };
-    }else {
-      // Lança erro com mensagem
-      throw new Error("Erro ao atualizar senha");
+    const responseBody = await res.json();
+    if (!res.ok) {
+      const message = responseBody.message || "Erro ao trocar senha";
+      throw new Error(message);
     }
+
+    return responseBody;
   },
 
-  // Simula POST /user/report
-  getReport: async (auth: string, start: string, end: string) => {
-    // Verifica se o token está ok
-    if (auth !== TOKEN) throw new Error("Unauthorized");
+  // GET /api/access-logs/
+  getAccessLogsPdf: async (
+    refreshToken: string,
+    userId: number,
+    start: string,
+    end: string
+  ) => {
+    const accessToken = await UserApi.getNewAccessToken(refreshToken);
+    const url = `/api/access-logs/?user_id=${userId}&timestamp__gte=${start}&timestamp__lte=${end}`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-    // Verifica se as datas foram preenchidas
-    if (!start || !end) throw new Error("Datas obrigatórias");
-
-    // Realiza a "chamada" da API e envia os filtros de relatório
-    await delay();
-    const responseCode = 200;
-    const reportPayload = JSON.stringify({ start, end });
-
-    // Apenas exibe o payload (simulação de envio)
-    console.log("Simulando envio de filtro de relatório:", reportPayload);
-
-    if (responseCode === 200) {
-      // Retorna a URL do PDF
-      return {
-        url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-      };
-    }else {
-      // Lança erro com mensagem
-      throw new Error("Erro ao gerar relatório");
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao buscar logs de acesso");
     }
-  }
-};
 
-// Simula atraso de rede
-const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
+    const logs = await res.json();
 
-// Tipagem para o usuário
-type UserData = {
-  name: string;
-  email: string;
-  cpf: string;
-  tel: string;
-  birth: string;
+    const formatDateTime = (isoString: string) => {
+      const date = new Date(isoString);
+      const data = date.toLocaleDateString("pt-BR");
+      const hora = date.toLocaleTimeString("pt-BR", { hour12: false });
+      return [data, hora];
+    };
+
+    // Gera o PDF
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("Log de acessos", 10, 10);
+    doc.setFontSize(12);
+    doc.text("Data | Hora", 10, 20);
+
+    let y = 30;
+    logs.forEach((log: any) => {
+      const [data, hora] = formatDateTime(log.timestamp);
+      doc.text(`${data} | ${hora}`, 10, y);
+      y += 10;
+      if (y > 280) { // adiciona nova página se necessário
+        doc.addPage();
+        y = 20;
+      }
+    });
+
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[:.]/g, "-");
+    doc.save(`log-de-acessos-${timestamp}.pdf`);
+  },
+
+  getNewAccessToken: async (refreshToken: string): Promise<string> => {
+    const res = await fetch("/api/token/refresh/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({"refresh": refreshToken}),
+    });
+
+    console.log(JSON.stringify({"refresh": refreshToken}));
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao renovar token");
+    }
+
+    const data = await res.json();
+    console.log(data);
+    return data.access;
+  },
 };

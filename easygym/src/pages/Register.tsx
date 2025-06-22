@@ -29,6 +29,7 @@ const RegisterPage = () => {
     const [isCpfValid, setIsCpfValid] = useState(false);
     const [isTelValid, setIsTelValid] = useState(false);
     const [isDateValid, setIsDateValid] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // novo estado
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -69,6 +70,8 @@ const RegisterPage = () => {
     };
 
     const handleRegister = async () => {
+        setIsLoading(true);
+
         if (user.getName().trim() == '' || !(user.getName().trim().indexOf(' ') > -1)) {
             showToast("Por favor, insira um nome e sobrenome válido", "error");
             return;
@@ -94,16 +97,12 @@ const RegisterPage = () => {
             return;
         }
 
-        const [firstName, ...lastNameArr] = user.getName().trim().split(" ");
-        const lastName = lastNameArr.join(" ") || "Sobrenome";
-
         const payload = {
             username: user.getEmail(),
             email: user.getEmail(),
             password: user.getPassword(),
             password_confirmation: confirmPassword,
-            first_name: firstName,
-            last_name: lastName,
+            full_name: user.getName(),
             phone: user.getTel(),
             customer_doc: user.getCpf(),
             date_of_birth: user.getBirth().toISOString().split("T")[0]
@@ -123,6 +122,7 @@ const RegisterPage = () => {
             });
         } catch (err: any) {
             showToast(err.message || "Erro desconhecido", "error");
+            setIsLoading(false);
         }
     };
 
@@ -159,6 +159,7 @@ const RegisterPage = () => {
                                         <Input style={{ paddingLeft: "45px" }}
                                             type="email"
                                             placeholder="Email"
+                                            disabled={isLoading}
                                             onChange={(e) => validateInput(e.target.value, () => user.setEmail(e.target.value), setIsEmailValid, regexPatterns.emailPattern)}
                                         />
                                         {isEmailValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
@@ -172,6 +173,7 @@ const RegisterPage = () => {
                                             mask="000.000.000-00"
                                             unmask={true}
                                             placeholder="CPF"
+                                            disabled={isLoading}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setCpf(e.target.value), setIsCpfValid, regexPatterns.cpfPattern)}
                                         />
                                         {isCpfValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
@@ -182,6 +184,7 @@ const RegisterPage = () => {
                                             mask="(00) 00000-0000"
                                             unmask={true}
                                             placeholder="Telefone"
+                                            disabled={isLoading}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setTel(e.target.value), setIsTelValid, regexPatterns.phonePattern)}
                                         />
                                         {isTelValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
@@ -190,6 +193,7 @@ const RegisterPage = () => {
                                         <CalendarMonthIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
                                         <Input style={{ paddingLeft: "45px" }}
                                             type="date"
+                                            disabled={isLoading}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setBirth(new Date(e.target.value)), setIsDateValid, regexPatterns.datePattern)}
                                         />
                                         {isDateValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
@@ -202,6 +206,7 @@ const RegisterPage = () => {
                                         <Input style={{ paddingLeft: "45px" }}
                                             type="password"
                                             placeholder="Senha"
+                                            disabled={isLoading}
 
                                             onChange={(e) => user.setPassword(e.target.value)}
                                         />
@@ -211,6 +216,7 @@ const RegisterPage = () => {
                                         <Input style={{ paddingLeft: "45px" }}
                                             type="password"
                                             placeholder="Confirmar Senha"
+                                            disabled={isLoading}
                                             value={confirmPassword} onChange={(e) => handlePass(e.target.value)}
                                         />
                                         {isPasswordValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
@@ -218,7 +224,7 @@ const RegisterPage = () => {
                                 </FullWidth>
                             </Form>
 
-                            <Button style={{ width: "80%" }} onClick={() => handleRegister()}>Cadastrar</Button>
+                            <Button disabled={isLoading} style={{ width: "80%" }} onClick={() => handleRegister()}>{isLoading ? "Carregando..." : "Cadastrar"}</Button>
                         </Card>
                     </Container>
                 </Section>

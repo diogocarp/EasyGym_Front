@@ -13,7 +13,6 @@ let dueDate = "15";
 
 export const PaymentsApi = {
   getPayments: async (auth: string) => {
-    if (auth !== TOKEN) throw new Error("Unauthorized");
     await delay();
     const responseCode = 200;
 
@@ -68,16 +67,23 @@ export const PaymentsApi = {
     return { success: true };
   },
 
-  getPaymentMethod: async (auth: string) => {
-    if (auth !== TOKEN) throw new Error("Unauthorized");
-    await delay();
-    const responseCode = 200;
+  getPaymentMethod: async (refreshToken: string) => {
+    const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
+    const userRes = await fetch("/api/users/me/", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-    if (responseCode === 200) {
-      return paymentMethod;
-    } else {
-      throw new Error("Erro ao buscar forma de pagamento");
+
+    if (!userRes.ok) {
+      const err = await userRes.json();
+      throw new Error(err.message || "Erro ao buscar método de pagamento");
     }
+
+    const user = await userRes.json();
+    return user.payment_method_display;
   },
 
   updateDueDate: async (auth: string, newDueDate: string) => {
@@ -94,16 +100,44 @@ export const PaymentsApi = {
     }
   },
 
-  getDueDate: async (auth: string) => {
-    if (auth !== TOKEN) throw new Error("Unauthorized");
-    await delay();
-    const responseCode = 200;
+  getDueDate: async (refreshToken: string) => {
+    const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
 
-    if (responseCode === 200) {
-      return dueDate;
-    } else {
-      throw new Error("Erro ao buscar data de due");
+    const res = await fetch("/api/users/me/", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao buscar data de vencimento");
     }
+
+    const user = await res.json();
+    return user.due_day;
+  },
+
+  getNewAccessToken: async (refreshToken: string): Promise<string> => {
+    const res = await fetch("/api/token/refresh/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({"refresh": refreshToken}),
+    });
+
+    console.log(JSON.stringify({"refresh": refreshToken}));
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao renovar token");
+    }
+
+    const data = await res.json();
+    console.log(data);
+    return data.access;
   },
 };
 

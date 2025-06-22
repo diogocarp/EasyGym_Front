@@ -6,6 +6,7 @@ import logo from '../../assets/img/home-assets/logo-quadrado-v2.png';
 import { SidebarDrawer, SidebarListItem, SidebarListItemIcon, SidebarListItemText } from "../../styles/SidebarStyles";
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useTheme, useMediaQuery } from "@mui/material";
+import Cookies from "js-cookie";
 
 
 interface SidebarProps {
@@ -23,6 +24,14 @@ const Sidebar: React.FC<SidebarProps> = ({ setActivePage, activePage, open, onCl
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    const handleLogout = () => {
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("refreshToken");
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
+        navigate("/login");
+    };
 
     const drawerContent = (
         <>
@@ -46,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setActivePage, activePage, open, onCl
                     <ListItemText primary="Configurações" style={ activePage === "settings" ? { color: "black" } : {} }/>
                 </SidebarListItem>
 
-                <SidebarListItem onClick={() => navigate("/")}>
+                <SidebarListItem onClick={() => handleLogout()}>
                     <SidebarListItemIcon>
                         <ExitToApp/>
                     </SidebarListItemIcon>

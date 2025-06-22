@@ -13,6 +13,7 @@ export const GlobalStyle = createGlobalStyle`
 
     html, body, #root {
         height: 100%;
+        padding-right: 0 !important;
     }
 
 `

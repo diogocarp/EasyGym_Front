@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const RootSection = styled.section`
-  height: 100vh;
+  min-height: 100vh;
   background-color: #1a1a1a;
   display: flex;
   flex-direction: column;
@@ -21,10 +21,7 @@ const Section = styled.section`
   justify-content: center;
   align-items: center;
   width: 100%;
-
-  @media (max-width: 768px) {
-    padding: 40px 20px;
-  }
+  padding: 10px;
 `;
 
 const Card = styled.div`
@@ -36,8 +33,8 @@ const Card = styled.div`
   width: 450px;
 
   @media (max-width: 550px) {
-    width: 90%;
-    padding: 30px;
+    padding: 20px;
+    width: 100%;
   }
 `;
 

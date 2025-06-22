@@ -5,6 +5,7 @@ import { IMaskInput } from "react-imask";
 
 const Container = styled.div`
   background-color:#252525;
+  padding: 0px;
 `
 
 const TitleBox = styled.div`

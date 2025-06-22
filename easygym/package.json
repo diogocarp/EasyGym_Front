@@ -1,7 +1,7 @@
 {
   "name": "easygym",
   "private": true,
-  "version": "0.0.21",
+  "version": "0.0.22",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +16,7 @@
     "@mui/styled-engine-sc": "^6.4.3",
     "axios": "^1.7.9",
     "js-cookie": "^3.0.5",
+    "jspdf": "^3.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-imask": "^7.6.1",

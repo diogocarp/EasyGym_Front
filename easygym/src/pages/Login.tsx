@@ -16,7 +16,7 @@ const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // novo estado
+    const [isLoading, setIsLoading] = useState(false);
 
     const showToast = (
         message: string,

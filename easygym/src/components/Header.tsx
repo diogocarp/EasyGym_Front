@@ -31,8 +31,8 @@ const Header = () => {
                 <Logo src={logo} onClick={()=>navigate("/")}/>
             </LogoContainer>
 
-            <HeaderMenuIcon onClick={toggleMenu}>
-                {isMenuOpen ? <CloseIcon style={{marginRight:40}}/> : <MenuIcon style={{marginRight:40}}/>}
+            <HeaderMenuIcon style={{justifyContent: isMenuOpen? "end" : "center"}} onClick={toggleMenu}>
+                {isMenuOpen ? <CloseIcon style={{marginRight: 5}}/> : <MenuIcon/>}
             </HeaderMenuIcon>
 
             <Nav>

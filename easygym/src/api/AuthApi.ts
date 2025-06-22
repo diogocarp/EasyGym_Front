@@ -5,8 +5,7 @@ export type RegisterPayload = {
   email: string;
   password: string;
   password_confirmation: string;
-  first_name: string;
-  last_name: string;
+  full_name: string;
   phone: string;
   customer_doc: string;
   date_of_birth: string; // Ex: "2025-06-22"
@@ -28,7 +27,7 @@ export const AuthApi = {
          } else {
             const errorData = await response.json();
             const messages = Object.entries(errorData)
-            .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+            .map(([field, msgs]) => `${(msgs as string[]).join(", ")}`)
             .join("\n");
             throw new Error(messages || "Dados inválidos");
          }
@@ -39,12 +38,11 @@ export const AuthApi = {
 
    verifyEmail: async (token: string) => {
       try {
-         const response = await fetch("/api/confirm-email/", {
-            method: "POST",
+         const response = await fetch("/api/users/verify-email/" + token, {
+            method: "GET",
             headers: {
                "Content-Type": "application/json"
             },
-            body: JSON.stringify({ token })
          });
 
          if (response.ok) {

@@ -66,9 +66,13 @@ const HeaderMenuIcon = styled.div`
   color: white;
   font-size: 24px;
   cursor: pointer;
+  height: 100%;
+  width: 100px;
+  align-items: center;
+  justify-content: center;
 
   @media (max-width: 768px) {
-    display: block;
+    display: flex;
   }
 `;
 
@@ -82,6 +86,7 @@ const Sidebar = styled.div<SidebarProps>`
   left: 0;
   height: 100vh;
   width: 250px;
+  max-width: 80%;
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
   transform: ${({ isOpen }) => (isOpen ? "translateX(0)" : "translateX(-100%)")};

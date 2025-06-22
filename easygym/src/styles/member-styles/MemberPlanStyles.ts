@@ -7,12 +7,13 @@ const InfoIcon = styled(InfoOutlined)`
 `
 const Container = styled.div`
   background-color:#252525;
+  padding: 0px;
 `
 
 const TitleBox = styled.div`
   display:flex; 
   align-items:center;
-  padding: 20px 10px 10px 10px
+  margin-bottom: 20px;
 `;
 
 const Title = styled.h3`
@@ -59,7 +60,7 @@ const PlanText = styled.p`
 
 const Button = styled.button`
   background: #DD212F;
-  width: 220px;
+  width: 100%;
   color: white;
   border: none;
   padding: 10px;
@@ -103,13 +104,11 @@ const PlansSection = styled.section`
   display: flex;
   justify-content: center;
   gap: 2px;
-  padding: 40px;
   
 
   @media (max-width: 1000px) {
     flex-direction: column;
     align-items: center;
-    padding: 20px;
   }
 `;
 

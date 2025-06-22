@@ -1,18 +1,29 @@
-import { JSX, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import Sidebar from "../components/sidebars/SidebarMember";
 import MemberPlan from "../components/member/MemberPlan";
 import Settings from "../components/member/Settings";
 import Payments from "../components/member/Payments";
 import { useTheme, useMediaQuery, IconButton } from "@mui/material";
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 
 const MemberPage: React.FC = () => {
   const [activePage, setActivePage] = useState<string>("member");
-    const [drawerOpen, setDrawerOpen] = useState(false);
-  
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const sessionRefresh = sessionStorage.getItem("refreshToken");
+    const cookieRefresh = Cookies.get("refreshToken");
+
+    if (!sessionRefresh && !cookieRefresh) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const renderPage = (): JSX.Element => {
     switch (activePage) {

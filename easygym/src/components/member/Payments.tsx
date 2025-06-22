@@ -30,8 +30,8 @@ import {
 import { toast, ToastContainer } from 'react-toastify';
 
 // APIs
-import { TOKEN } from '../../api/Token';
 import { PaymentsApi } from '../../api/member/PaymentsApi';
+import Cookies from 'js-cookie';
 
 // === VARIÁVEIS FIXAS ===
 const VENCIMENTOS_FIXOS = ["5", "15", "27"];
@@ -72,6 +72,8 @@ const Payments = () => {
   const [pagamentos, setPagamentos] = useState<paymentType[]>([]);
   const [dueDate, setDueDate] = useState<string>(""); // Inicialmente vazio
   const [paymentMethod, setPaymentMethod] = useState<string>("");
+  
+  const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
 
   const [cardData, setCardData] = useState({
     name: "",
@@ -101,13 +103,13 @@ const Payments = () => {
     (async () => {
       try {
         const [pagamentos, metodo, vencimento] = await Promise.all([
-          PaymentsApi.getPayments(TOKEN),
-          PaymentsApi.getPaymentMethod(TOKEN),
-          PaymentsApi.getDueDate(TOKEN),
+          PaymentsApi.getPayments(refreshToken),
+          PaymentsApi.getPaymentMethod(refreshToken),
+          PaymentsApi.getDueDate(refreshToken),
         ]);
         setPagamentos(pagamentos);
-        setPaymentMethod(metodo);
-        setDueDate(vencimento);
+        setPaymentMethod(metodo ? metodo : "Não cadastrado");
+        setDueDate(vencimento ? vencimento : "5");
       } catch (err: any) {
         showToast(err.message || "Erro ao carregar dados de pagamento", "error");
       }
@@ -132,9 +134,9 @@ const Payments = () => {
     }
 
     try {
-      await PaymentsApi.updatePaymentMethod(TOKEN, selectedMethod, selectedMethod === "credit" ? cardData : undefined);
+      await PaymentsApi.updatePaymentMethod(refreshToken, selectedMethod, selectedMethod === "credit" ? cardData : undefined);
 
-      const novoMetodo = await PaymentsApi.getPaymentMethod(TOKEN);
+      const novoMetodo = await PaymentsApi.getPaymentMethod(refreshToken);
       setPaymentMethod(novoMetodo);
       setOpenPaymentModal(false);
       showToast("Forma de pagamento atualizada com sucesso!", "success");
@@ -147,7 +149,7 @@ const Payments = () => {
 
   const handleSaveDueDate = async () => {
     try {
-      await PaymentsApi.updateDueDate(TOKEN, dueDate);
+      await PaymentsApi.updateDueDate(refreshToken, dueDate);
       showToast("Data de vencimento atualizada!", "success");
       setOpenDueDateModal(false);
     } catch (err: any) {

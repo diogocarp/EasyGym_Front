@@ -22,6 +22,10 @@ const CustomMaskedInput = styled(IMaskInput)`
 
   
 
+    &:disabled {
+        color: gray;
+    }
+
     &::-webkit-datetime-edit {
         color: gray;
     }

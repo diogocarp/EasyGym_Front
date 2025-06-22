@@ -24,13 +24,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import { TOKEN } from '../../api/Token';
 import { PlansApi } from '../../api/member/PlanApi';
 
-const modalStyle = {
-  position: 'absolute', top: '50%', left: '50%',
-  transform: 'translate(-50%, -50%)',
-  bgcolor: '#333', boxShadow: 24, p: 4,
-  borderRadius: "8px", width: "600px"
-};
-
 interface Plan {
   id: number;
   title: string;
@@ -86,6 +79,24 @@ const MemberPlan = () => {
   const handleSelect = (plan: Plan) => {
     setPreSelectedPlan(plan);
     setConfirmSelectionModal(true);
+  };
+
+  const getModalStyle = () => {
+    return {
+      position: 'absolute', top: '50%', left: '50%',
+      transform: 'translate(-50%, -50%)',
+      bgcolor: '#333', boxShadow: 24, p: 4,
+      borderRadius: isMobile? "0px" : "8px", 
+      maxWidth: "600px",
+      width: "100%",
+      maxHeight: "100%",
+      height: isMobile? "100%" : "auto",
+      padding: isMobile? "15px" : "32px",
+      overflowY: "auto",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center"
+    };
   };
 
   const showToast = (message: string, type: 'success' | 'error' | 'info', duration = 3000) => {
@@ -155,7 +166,7 @@ const MemberPlan = () => {
         </TitleBox>
 
         {!selectedPlan && (
-          <PlansSection style={{ flexDirection: isMobile ? "column" : "row", padding: "10px" }}>
+          <PlansSection style={{ flexDirection: isMobile ? "column" : "row" }}>
             {plans.map((plan) => (
               <PlanCard key={plan.id}>
                 <div>
@@ -182,7 +193,7 @@ const MemberPlan = () => {
 
         {selectedPlan && !confirmSelectionModal && (
           <PlanContainer>
-            <PlansSection style={{ flex: 1 }}>
+            <PlansSection style={{ flex: 1, paddingTop: isMobile? "15px" : "0px" }}>
               <Plan
                 style={{
                   display: isMobile ? "flex" : "grid",
@@ -225,7 +236,7 @@ const MemberPlan = () => {
 
       {/* Modal com fidelidade */}
       <Modal open={openConfirmModal} onClose={() => setOpenConfirmModal(false)}>
-        <Box sx={modalStyle}>
+        <Box sx={getModalStyle}>
           <center><h3 style={{ color: "white" }}>Você está em um plano com fidelidade. Tem certeza que deseja cancelar?</h3></center>
           <br/>
           <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>Ao confirmar, será aplicada uma multa de 15% sobre o valor restante das mensalidades.</p></center>
@@ -237,7 +248,7 @@ const MemberPlan = () => {
               onChange={() => setAgreeWithCancelTerms(!agreeWithCancelTerms)}
               style={{ marginRight: "10px" }}
             />
-            Sim, estou ciente da multa de 15% e desejo prosseguir com o cancelamento.
+            <span style={{textAlign: "left"}}>Sim, estou ciente da multa de 15% e desejo prosseguir com o cancelamento.</span>
           </label>
           <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
             <Button onClick={handleConfirmCancel}>Confirmar</Button>
@@ -248,7 +259,7 @@ const MemberPlan = () => {
 
       {/* Modal sem fidelidade (convencimento) */}
       <Modal open={isConvinceModal} onClose={() => setIsConvinceModal(false)}>
-        <Box sx={modalStyle}>
+        <Box sx={getModalStyle}>
           <center><h3 style={{ color: "white" }}>Tem certeza que deseja cancelar seu plano?</h3></center>
           <br/>
           <p style={{ color: "#ccc", fontSize: 14, textAlign: "center" }}>
@@ -262,17 +273,17 @@ const MemberPlan = () => {
       </Modal>
 
       <Modal open={confirmSelectionModal} onClose={() => setConfirmSelectionModal(false)}>
-        <Box sx={modalStyle}>
-          <h3 style={{ color: "white", textAlign: "center" }}>Ótima escolha! Gostaria de prosseguir com a contratação do plano abaixo?</h3>
+        <Box sx={getModalStyle}>
+          <h4 style={{ color: "white", textAlign: "center" }}>Ótima escolha! Gostaria de prosseguir com a contratação do plano abaixo?</h4>
           {preSelectedPlan && (
-            <PlanCard style={{ marginTop: 20, background: "#434343", paddingBottom: "10px" }}>
+            <PlanCard style={{ marginTop: 20, background: "#434343", paddingBottom: "10px", padding: isMobile? "15px" : "20px" }}>
               <div>
                 <Title>Plano {preSelectedPlan.title}</Title>
                 <br/>
                 <Descricao>{preSelectedPlan.description}</Descricao>
                 <PlanList>
                   {preSelectedPlan.features.map((feature, idx) => (
-                    <PlanListItem key={idx}>
+                    <PlanListItem style={{marginTop: isMobile? "10px" : "15px", marginBottom: isMobile? "10px" : "15px"}} key={idx}>
                       <Icon src={feature.value ? ok : x} /> {feature.name}
                     </PlanListItem>
                   ))}
@@ -290,9 +301,9 @@ const MemberPlan = () => {
               onChange={() => setAgreeWithTerms(!agreeWithTerms)}
               style={{ marginRight: 10 }}
             />
-            Sim, li os <a href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" target="_blank" style={{ color: "#09f", marginLeft: 4, marginRight: 4 }}>termos e condições</a>e concordo com a contratação desse plano
+            <span style={{textAlign: "left"}}>Sim, li os <span style={{color: "#09f", textDecoration: "underline", cursor: "pointer"}} onClick={() => window.open("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", "_blank")}>termos e condições</span> e concordo com a contratação desse plano</span>
           </label>
-          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "2rem" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
             <Button onClick={confirmPlanSelection}>Assinar</Button>
             <Button onClick={() => setConfirmSelectionModal(false)}>Cancelar</Button>
           </div>

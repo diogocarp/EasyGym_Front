@@ -113,7 +113,6 @@ const SettingCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 260px;
 `;
 
 const SettingTitle = styled.div`
@@ -192,7 +191,7 @@ const Select = styled.select`
 const Container = styled.div`
   background-color:#252525;
   width: 100%;
-  padding: 10px;
+  padding: 0px;
 `
 
 const MoneyIcon = styled(AttachMoneyOutlined)`
