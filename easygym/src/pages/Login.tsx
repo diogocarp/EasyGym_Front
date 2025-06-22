@@ -8,54 +8,66 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from "react";
-
-import { AuthApi } from "../api/AuthApi"; 
+import Cookies from "js-cookie";
+import { AuthApi } from "../api/AuthApi";
 
 const LoginPage = () => {
-    
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    
+    const [rememberMe, setRememberMe] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // novo estado
+
     const showToast = (
-    message: string,
-    type: 'success' | 'error' | 'info',
-    duration = 3000
+        message: string,
+        type: 'success' | 'error' | 'info',
+        duration = 3000
     ) => {
-    toast[type](message, {
-        position: "bottom-right",
-        autoClose: duration,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: type !== 'info',
-        draggable: true,
-        style: { backgroundColor: "#444", color: "white" },
-    });
+        toast[type](message, {
+            position: "bottom-right",
+            autoClose: duration,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: type !== 'info',
+            draggable: true,
+            style: { backgroundColor: "#444", color: "white" },
+        });
     };
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
+        if (!email || !password) {
+            showToast("Por favor, insira dados válidos.", "error");
+            return;
+        }
 
-        if (email && password) {
+        setIsLoading(true);
+
+        try {
+            const { access, refresh } = await AuthApi.login(email, password);
+
+            if (rememberMe) {
+                sessionStorage.setItem("accessToken", access);
+                sessionStorage.setItem("refreshToken", refresh);
+            } else {
+                Cookies.set("accessToken", access, { expires: 1 });
+                Cookies.set("refreshToken", refresh, { expires: 7 });
+            }
+
+            const profile = await AuthApi.getProfile(access);
+
             toast.success("Login realizado com sucesso!", {
                 position: "bottom-right",
-                autoClose: 2500,
+                autoClose: 1500,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
                 style: { backgroundColor: "#444", color: "white" },
-                onClose: () => { password == "admin" ? navigate("/manager") : navigate("/member")}
+                onClose: () => { profile.is_staff ? navigate("/manager") : navigate("/member") }
             });
-        } else {
-            toast.error("Por favor, insira dados válidos.", {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                style: { backgroundColor: "#444", color: "white" }
-            });
+        } catch (err: any) {
+            showToast(err.message || "Erro ao fazer login", "error");
+            setIsLoading(false);
         }
     };
 
@@ -77,33 +89,51 @@ const LoginPage = () => {
                             </Options>
 
                             <InputContainer>
-                                <PersonIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
-                                <Input name="email" style={{ paddingLeft: "45px" }} type="text" placeholder="Digite seu email ou CPF" onChange={(e) => setEmail(e.target.value)} />
+                                <PersonIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute" }} />
+                                <Input
+                                    name="email"
+                                    style={{ paddingLeft: "45px" }}
+                                    type="text"
+                                    placeholder="Digite seu email ou CPF"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    disabled={isLoading}
+                                />
                             </InputContainer>
 
-                            <InputContainer style={{marginTop: "10px"}}>
-                                <LockIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
-                                <Input name="password" style={{ paddingLeft: "45px" }} type="password" placeholder="Digite sua senha" onChange={(e) => setPassword(e.target.value)} />
+                            <InputContainer style={{ marginTop: "10px" }}>
+                                <LockIcon style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute" }} />
+                                <Input
+                                    name="password"
+                                    style={{ paddingLeft: "45px" }}
+                                    type="password"
+                                    placeholder="Digite sua senha"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    disabled={isLoading}
+                                />
                             </InputContainer>
 
-                            <Options style={{justifyContent: "space-between"}}>
-                                <label style={{display: "flex", alignItems: "center"}}>
-                                    <Checkbox type="checkbox" /> Lembrar-me
+                            <Options style={{ justifyContent: "space-between" }}>
+                                <label style={{ display: "flex", alignItems: "center" }}>
+                                    <Checkbox
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        disabled={isLoading}
+                                    /> Lembrar-me
                                 </label>
                                 <Link onClick={() => navigate("/reset")}>Esqueceu a senha?</Link>
                             </Options>
 
-                            <Button onClick={() => handleLogin()}>Logar</Button>
-                            
+                            <Button onClick={handleLogin} disabled={isLoading}>
+                                {isLoading ? "Entrando..." : "Logar"}
+                            </Button>
                         </Card>
-                        
                     </Container>
-                
                 </Section>
-                
                 <Footer />
             </RootSection>
-
             <ToastContainer />
         </>
     );

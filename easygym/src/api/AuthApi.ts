@@ -78,5 +78,22 @@ export const AuthApi = {
       } catch (error: any) {
          throw new Error(error.message || "Erro ao fazer login.");
       }
-   }
+   },
+
+   getProfile: async (token: string) => {
+    try {
+      const response = await fetch("/api/users/me/", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Erro ao obter perfil.");
+
+      return await response.json();
+    } catch (error: any) {
+      throw new Error(error.message || "Erro ao buscar dados do usuário.");
+    }
+  }
 };
