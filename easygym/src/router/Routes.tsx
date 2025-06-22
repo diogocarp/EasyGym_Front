@@ -5,15 +5,19 @@ import Register from '../pages/Register';
 import Manager from '../pages/Manager';
 import Member from '../pages/Member';
 import ResetPassword from '../pages/ResetPassword';
-import ConfirmedRegister from '../pages/ConfirmRegister';
-import ConfirmedReset from '../pages/ConfirmReset';
+import ConfirmRegister from '../pages/ConfirmRegister';
+import ConfirmedRegister from '../pages/ConfirmedRegister';
+import ConfirmReset from '../pages/ConfirmReset';
+import ConfirmedReset from '../pages/ConfirmedReset';
 
 const routesConfig = [
   { path: '/home', element: <Home /> },
   { path: '/login', element: <Login /> },
   { path: '/register', element: <Register /> },
   { path: '/reset', element: <ResetPassword /> },
+  { path: '/confirm', element: <ConfirmRegister /> },
   { path: '/confirmed', element: <ConfirmedRegister /> },
+  { path: '/ConfirmReset', element: <ConfirmReset /> },
   { path: '/confirmedReset', element: <ConfirmedReset /> },
   { path: '/manager', element: <Manager /> },
   { path: '/member', element: <Member /> },

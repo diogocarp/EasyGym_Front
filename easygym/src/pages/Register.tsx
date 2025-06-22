@@ -17,6 +17,8 @@ import { ValidateInputType, regexPatterns } from "./constants/MaskConstants";
 import User from "../models/User";
 import { toast, ToastContainer } from "react-toastify";
 
+import { AuthApi } from '../api/AuthApi';
+
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 500);
@@ -49,80 +51,79 @@ const RegisterPage = () => {
         setConfirmPassword(value);
 
     };
+    
+    const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info',
+    duration = 3000
+    ) => {
+    toast[type](message, {
+        position: "bottom-right",
+        autoClose: duration,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: type !== 'info',
+        draggable: true,
+        style: { backgroundColor: "#444", color: "white" },
+    });
+    };
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
+        if (user.getName().trim() == '' || !(user.getName().trim().indexOf(' ') > -1)) {
+            showToast("Por favor, insira um nome e sobrenome válido", "error");
+            return;
+        }
         if (!isEmailValid) {
-            toast.error("Por favor, insira um e-mail válido.", {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                style: { backgroundColor: "#444", color: "white" }
-            });
+            showToast("Por favor, insira um e-mail válido", "error");
             return;
         }
         if (!isCpfValid) {
-            toast.error("Por favor, insira um CPF válido.", {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                style: { backgroundColor: "#444", color: "white" }
-            });
+            showToast("Por favor, insira um CPF válido", "error");
             return;
         }
         if (!isTelValid) {
-            toast.error("Por favor, insira um telefone válido.", {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                style: { backgroundColor: "#444", color: "white" }
-            });
+            showToast("Por favor, insira um telefone válido", "error");
             return;
         }
         if (!isDateValid) {
-            toast.error("Por favor, insira uma data de nascimento válida.", {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                style: { backgroundColor: "#444", color: "white" }
-            });
+            showToast("Por favor, insira uma data de nascimento válida", "error");
             return;
         }
         if (!isPasswordValid) {
-            toast.error("As senhas não coincidem.", {
+            showToast("As senhas não coincidem", "error");
+            return;
+        }
+
+        const [firstName, ...lastNameArr] = user.getName().trim().split(" ");
+        const lastName = lastNameArr.join(" ") || "Sobrenome";
+
+        const payload = {
+            username: user.getEmail(),
+            email: user.getEmail(),
+            password: user.getPassword(),
+            password_confirmation: confirmPassword,
+            first_name: firstName,
+            last_name: lastName,
+            phone: user.getTel(),
+            customer_doc: user.getCpf(),
+            date_of_birth: user.getBirth().toISOString().split("T")[0]
+        };
+
+        try {
+            await AuthApi.register(payload);
+            toast.success("Cadastro realizado com sucesso!", {
                 position: "bottom-right",
-                autoClose: 5000,
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                style: { backgroundColor: "#444", color: "white" }
+                style: { backgroundColor: "#444", color: "white" },
+                onClose: () => navigate("/confirm")
             });
-            return;
+        } catch (err: any) {
+            showToast(err.message || "Erro desconhecido", "error");
         }
-
-        toast.success("Cadastro realizado com sucesso!", {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            style: { backgroundColor: "#444", color: "white" },
-            onClose: () => navigate("/confirmed")
-        });
-        console.log(user.toString())
     };
 
     return (

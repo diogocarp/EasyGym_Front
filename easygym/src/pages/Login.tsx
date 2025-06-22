@@ -9,11 +9,30 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from "react";
 
+import { AuthApi } from "../api/AuthApi"; 
+
 const LoginPage = () => {
     
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    
+    const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info',
+    duration = 3000
+    ) => {
+    toast[type](message, {
+        position: "bottom-right",
+        autoClose: duration,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: type !== 'info',
+        draggable: true,
+        style: { backgroundColor: "#444", color: "white" },
+    });
+    };
+
     const handleLogin = () => {
 
         if (email && password) {
