@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import {  Card, Container, Logo, Section, RootSection } from "../styles/LoginStyle";
@@ -11,8 +11,8 @@ import { AuthApi } from '../api/AuthApi';
 
 const ConfirmedRegister = () => {
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
     const [isValid, setIsValid] = useState<boolean | null>(null);
+    console.log(isValid)
     let hasRun = false;
 
     useEffect(() => {
