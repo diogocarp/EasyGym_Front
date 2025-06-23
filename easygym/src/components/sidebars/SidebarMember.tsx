@@ -36,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setActivePage, activePage, open, onCl
     const drawerContent = (
         <>
             <LogoContainer>
-                <Logo src={logo} onClick={() => navigate("/")} />
+                <Logo src={logo} onClick={() => handleLogout()} />
             </LogoContainer>
             <List>
 

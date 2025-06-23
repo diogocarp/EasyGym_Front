@@ -11,6 +11,8 @@ import {
 } from "../../styles/SidebarStyles";
 import { useTheme, useMediaQuery } from "@mui/material";
 
+import Cookies from 'js-cookie';
+
 const drawerWidth: number = 240;
 
 interface SidebarProps {
@@ -25,10 +27,18 @@ const Sidebar: React.FC<SidebarProps> = ({ setActivePage, activePage, open, onCl
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const handleLogout = () => {
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("refreshToken");
+          Cookies.remove("accessToken");
+          Cookies.remove("refreshToken");
+          navigate("/login");
+      };
+
   const drawerContent = (
     <>
       <LogoContainer>
-        <Logo src={logo} onClick={() => navigate("/")} />
+        <Logo src={logo} onClick={() => handleLogout()} />
       </LogoContainer>
       <List>
         <SidebarListItem onClick={() => setActivePage("dashboard")} style={activePage === "dashboard" ? { backgroundColor: "#ccc" } : {}}>
@@ -46,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setActivePage, activePage, open, onCl
           <SidebarListItemText style={activePage === "members" ? { color: "#252525" } : {}} primary="Alunos" />
         </SidebarListItem>
 
-        <SidebarListItem onClick={() => navigate("/")}>
+        <SidebarListItem onClick={() => handleLogout()}>
           <SidebarListItemIcon><ExitToApp /></SidebarListItemIcon>
           <SidebarListItemText primary="Sair" />
         </SidebarListItem>

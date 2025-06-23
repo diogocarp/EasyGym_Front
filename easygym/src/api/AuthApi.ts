@@ -27,10 +27,12 @@ export const AuthApi = {
          } else {
             const errorData = await response.json();
             const messages = Object.entries(errorData)
-            .map(([field, msgs]) => `${(msgs as string[]).join(", ")}`)
+            .map(([field, msgs]) => `${(msgs as string[]).join(", ")}`+`${field}`,)
             .join("\n");
             throw new Error(messages || "Dados inválidos");
+            
          }
+         
       } catch (error: any) {
          throw new Error(error.message || "Erro ao cadastrar usuário... Tente novamente mais tarde");
       }
@@ -88,7 +90,7 @@ export const AuthApi = {
          });
 
          if (response.ok) {
-            const data = await response.json(); // { access, refresh }
+            const data = await response.json(); 
             return data;
          } else {
             const errorData = await response.json();
