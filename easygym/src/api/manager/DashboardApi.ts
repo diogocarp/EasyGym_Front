@@ -35,7 +35,7 @@ const fetchWithAuth = async (url: string, token: string): Promise<any> => {
 export const DashboardApi = {
 
   getNewAccessToken: async (refreshToken: string): Promise<string> => {
-    const res = await fetch("/api/token/refresh/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/token/refresh/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,9 +68,9 @@ export const DashboardApi = {
     if (end_date) params.append("end_date", end_date);
 
     const [frequency, memberships, financial] = await Promise.all([
-      fetchWithAuth(`/api/statistics/active-subscriptions/?${params.toString()}`, accessToken),
-      fetchWithAuth(`/api/statistics/enrolled-members/?${params.toString()}`, accessToken),
-      fetchWithAuth(`/api/statistics/financial/?${params.toString()}`, accessToken)
+      fetchWithAuth(`https://gym.mestracegonhas.com/api/statistics/active-subscriptions/?${params.toString()}`, accessToken),
+      fetchWithAuth(`https://gym.mestracegonhas.com/api/statistics/enrolled-members/?${params.toString()}`, accessToken),
+      fetchWithAuth(`https://gym.mestracegonhas.com/api/statistics/financial/?${params.toString()}`, accessToken)
     ]);
 
     return {

@@ -5,7 +5,7 @@ export const UserApi = {
   // GET /api/users/me/
   getUser: async (refreshToken: string) => {
     const accessToken = await UserApi.getNewAccessToken(refreshToken);
-    const res = await fetch("/api/users/me/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/users/me/", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -29,7 +29,7 @@ export const UserApi = {
     updatedData: { full_name: string; phone: string; date_of_birth: string }
   ) => {
     const accessToken = await UserApi.getNewAccessToken(refreshToken);
-    const res = await fetch(`/api/users/${id}/`, {
+    const res = await fetch(`https://gym.mestracegonhas.com/api/users/${id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +54,7 @@ export const UserApi = {
     password_confirmation: string
   ) => {
     const accessToken = await UserApi.getNewAccessToken(refreshToken);
-    const res = await fetch("/api/users/change-password/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/users/change-password/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export const UserApi = {
 
   // GET /api/access-logs/
   getNewAccessToken: async (refreshToken: string): Promise<string> => {
-    const res = await fetch("/api/token/refresh/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/token/refresh/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh: refreshToken }),
@@ -100,7 +100,7 @@ export const UserApi = {
     const accessToken = await UserApi.getNewAccessToken(refreshToken);
 
     // Monta URL para consulta dos logs com filtros de data e usuário
-    const url = `/api/access-logs/?user_id=${userId}&timestamp__gte=${start}&timestamp__lte=${end}`;
+    const url = `https://gym.mestracegonhas.com/api/access-logs/?user_id=${userId}&timestamp__gte=${start}&timestamp__lte=${end}`;
 
     // Faz requisição
     const res = await fetch(url, {

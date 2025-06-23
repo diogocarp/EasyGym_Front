@@ -1,6 +1,6 @@
 export const PlansApi = {
   getPlans: async () => {
-    const userRes = await fetch("/api/plans/?ordering=name", {
+    const userRes = await fetch("https://gym.mestracegonhas.com/api/plans/?ordering=name", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export const PlansApi = {
     const userId = await PlansApi.getUserId(refreshToken);
 
     var accessToken = await PlansApi.getNewAccessToken(refreshToken);
-    const userRes = await fetch("/api/subscriptions/?member_id=" + userId, {
+    const userRes = await fetch("https://gym.mestracegonhas.com/api/subscriptions/?member_id=" + userId, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -37,7 +37,7 @@ export const PlansApi = {
     if (subscriptions.length > 0) {
       for (const subscription of subscriptions) {
         if (subscription.is_active) {
-          const planRes = await fetch(`/api/plans/${subscription.plan}/`, {
+          const planRes = await fetch(`https://gym.mestracegonhas.com/api/plans/${subscription.plan}/`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -73,7 +73,7 @@ export const PlansApi = {
   
   getUserId: async (refreshToken: string) => {
     const accessToken = await PlansApi.getNewAccessToken(refreshToken);
-    const res = await fetch("/api/users/me/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/users/me/", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -91,7 +91,7 @@ export const PlansApi = {
   },
 
   getNewAccessToken: async (refreshToken: string): Promise<string> => {
-    const res = await fetch("/api/token/refresh/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/token/refresh/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -5,7 +5,7 @@ export const PaymentsApi = {
     const userId = await PaymentsApi.getUserId(refreshToken);
 
     var accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-    const userRes = await fetch("/api/payments/?member_id=" + userId, {
+    const userRes = await fetch("https://gym.mestracegonhas.com/api/payments/?member_id=" + userId, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -48,7 +48,7 @@ export const PaymentsApi = {
     }
 
     const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-    const response = await fetch("api/users/payment/method/", {
+    const response = await fetch("https://gym.mestracegonhas.com/api/users/payment/method/", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -71,7 +71,7 @@ export const PaymentsApi = {
 
   getPaymentMethod: async (refreshToken: string) => {
     const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-    const userRes = await fetch("api/users/payment/method/", {
+    const userRes = await fetch("https://gym.mestracegonhas.com/api/users/payment/method/", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -96,7 +96,7 @@ export const PaymentsApi = {
 
   updateDueDate: async (refreshToken: string, newDueDate: string) => {
     const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-    const response = await fetch("api/users/payment/duedate/", {
+    const response = await fetch("https://gym.mestracegonhas.com/api/users/payment/duedate/", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -114,7 +114,7 @@ export const PaymentsApi = {
 
   getDueDate: async (refreshToken: string) => {
     const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-    const userRes = await fetch("api/users/payment/duedate/", {
+    const userRes = await fetch("https://gym.mestracegonhas.com/api/users/payment/duedate/", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -138,7 +138,7 @@ export const PaymentsApi = {
 
   getUserId: async (refreshToken: string) => {
     const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-    const res = await fetch("/api/users/me/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/users/me/", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -156,7 +156,7 @@ export const PaymentsApi = {
   },
 
   getNewAccessToken: async (refreshToken: string): Promise<string> => {
-    const res = await fetch("/api/token/refresh/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/token/refresh/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

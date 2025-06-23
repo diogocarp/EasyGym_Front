@@ -97,7 +97,7 @@ getNewAccessToken: async (refreshToken: string): Promise<string> => {
 
     const accessToken = await MembersApi.getNewAccessToken(auth);
 
-    const response = await fetch(`/api/users/?${query.toString()}`, {
+    const response = await fetch(`https://gym.mestracegonhas.com/api/users/?${query.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -127,7 +127,7 @@ getNewAccessToken: async (refreshToken: string): Promise<string> => {
 
     const accessToken = await MembersApi.getNewAccessToken(auth);
 
-    const response = await fetch(`/api/users/${updated.id}/`, {
+    const response = await fetch(`https://gym.mestracegonhas.com/api/users/${updated.id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

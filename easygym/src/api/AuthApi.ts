@@ -14,7 +14,7 @@ export type RegisterPayload = {
 export const AuthApi = {
    register: async (data: RegisterPayload) => {
       try {
-         const response = await fetch("/api/users/register/", {
+         const response = await fetch("https://gym.mestracegonhas.com/api/users/register/", {
             method: "POST",
             headers: {
                "Content-Type": "application/json"
@@ -40,7 +40,7 @@ export const AuthApi = {
 
    verifyEmail: async (token: string) => {
       try {
-         const response = await fetch("/api/users/verify-email/" + token, {
+         const response = await fetch("https://gym.mestracegonhas.com/api/users/verify-email/" + token, {
             method: "GET",
             headers: {
                "Content-Type": "application/json"
@@ -60,7 +60,7 @@ export const AuthApi = {
 
    resetPassword: async (token: string, password: string, password_confirmation: string) => {
       try {
-         const response = await fetch("/api/users/reset-password-confirm/" + token + "/", {
+         const response = await fetch("https://gym.mestracegonhas.com/api/users/reset-password-confirm/" + token + "/", {
             method: "POST",
             headers: {
                "Content-Type": "application/json"
@@ -84,7 +84,7 @@ export const AuthApi = {
 
    resendEmail: async (email: string) => {
       try {
-         const response = await fetch("/api/users/resend-verification/", {
+         const response = await fetch("https://gym.mestracegonhas.com/api/users/resend-verification/", {
             method: "POST",
             headers: {
                "Content-Type": "application/json"
@@ -109,7 +109,7 @@ export const AuthApi = {
             username = username.replace(/[.\-]/g, "");
          }
 
-         const response = await fetch("/api/token/", {
+         const response = await fetch("https://gym.mestracegonhas.com/api/token/", {
             method: "POST",
             headers: {
                "Content-Type": "application/json"
@@ -131,7 +131,7 @@ export const AuthApi = {
 
    getProfile: async (token: string) => {
     try {
-      const response = await fetch("/api/users/me/", {
+      const response = await fetch("https://gym.mestracegonhas.com/api/users/me/", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -147,7 +147,7 @@ export const AuthApi = {
   },
 
   getNewAccessToken: async (refreshToken: string): Promise<string> => {
-    const res = await fetch("/api/token/refresh/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/token/refresh/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -166,7 +166,7 @@ export const AuthApi = {
 
    sendReset: async (email: string) => {
       try {
-         const response = await fetch("/api/users/reset-password/", {
+         const response = await fetch("https://gym.mestracegonhas.com/api/users/reset-password/", {
             method: "POST",
             headers: {
                "Content-Type": "application/json"
