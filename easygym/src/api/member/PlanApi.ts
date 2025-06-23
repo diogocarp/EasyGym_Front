@@ -1,18 +1,3 @@
-let userSelectedPlanJson = "";
-
-const plans = [
-  {
-    id: 1,
-    name: "TotalFit",
-    description: "Treine na unidade com diversos beneficios únicos e atendimento customizado",
-    price: 129.99,
-    features: [
-      { name: "Acesso à sauna e spa", available: "true" }
-    ],
-    duration_months: 12
-  }
-];
-
 export const PlansApi = {
   getPlans: async () => {
     const userRes = await fetch("/api/plans/?ordering=name", {
@@ -76,14 +61,13 @@ export const PlansApi = {
   setUserPlan: async (auth: string, plan: Plan) => {
     await delay();
     if (!auth) throw new Error("Unauthorized");
-    userSelectedPlanJson = JSON.stringify(plan);
+    JSON.stringify(plan);
     return { success: true };
   },
 
   cancelPlan: async (auth: string) => {
     await delay();
     if (!auth) throw new Error("Unauthorized");
-    userSelectedPlanJson = "";
     return { success: true };
   },
   

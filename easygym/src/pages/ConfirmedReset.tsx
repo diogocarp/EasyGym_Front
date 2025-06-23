@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { Card, Container, Logo, Section, RootSection, Button, SectionTitle, Row, ButtonContainer, Input, InputContainer } from "../styles/LoginStyle";
+import { Card, Container, Logo, Section, RootSection, Button, Row, ButtonContainer, Input, InputContainer } from "../styles/LoginStyle";
 import logo from '../assets/img/home-assets/logo-quadrado-v2.png';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from "react-toastify";

@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { Plan, PlansApi } from "../../api/manager/PlansApi";
 
-import Cookies from 'js-cookie';
 import { toast } from "react-toastify";
 
 const Plans = () => {
