@@ -178,8 +178,6 @@ export const PlansApi = {
   },
 };
 
-const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
-
 interface Plan {
   id: number;
   name: string;
