@@ -16,7 +16,7 @@ export interface Plan {
 export const PlansApi = {
 
 getNewAccessToken: async (refreshToken: string): Promise<string> => {
-    const res = await fetch("/api/token/refresh/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/token/refresh/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +37,7 @@ getNewAccessToken: async (refreshToken: string): Promise<string> => {
 
   getPlans: async (): Promise<Plan[]> => {
 
-    const response = await fetch("/api/plans/", {
+    const response = await fetch("https://gym.mestracegonhas.com/api/plans/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -66,7 +66,7 @@ getNewAccessToken: async (refreshToken: string): Promise<string> => {
 
     const accessToken = await PlansApi.getNewAccessToken(auth);
 
-    const response = await fetch(`/api/plans/${id}/`, {
+    const response = await fetch(`https://gym.mestracegonhas.com/api/plans/${id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

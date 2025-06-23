@@ -1,21 +1,6 @@
-let userSelectedPlanJson = "";
-
-const plans = [
-  {
-    id: 1,
-    name: "TotalFit",
-    description: "Treine na unidade com diversos beneficios únicos e atendimento customizado",
-    price: 129.99,
-    features: [
-      { name: "Acesso à sauna e spa", available: "true" }
-    ],
-    duration_months: 12
-  }
-];
-
 export const PlansApi = {
   getPlans: async () => {
-    const userRes = await fetch("/api/plans/?ordering=name", {
+    const userRes = await fetch("https://gym.mestracegonhas.com/api/plans/?ordering=name", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -35,7 +20,7 @@ export const PlansApi = {
     const userId = await PlansApi.getUserId(refreshToken);
 
     var accessToken = await PlansApi.getNewAccessToken(refreshToken);
-    const userRes = await fetch("/api/subscriptions/?member_id=" + userId, {
+    const userRes = await fetch("https://gym.mestracegonhas.com/api/subscriptions/?member_id=" + userId, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -52,7 +37,7 @@ export const PlansApi = {
     if (subscriptions.length > 0) {
       for (const subscription of subscriptions) {
         if (subscription.is_active) {
-          const planRes = await fetch(`/api/plans/${subscription.plan}/`, {
+          const planRes = await fetch(`https://gym.mestracegonhas.com/api/plans/${subscription.plan}/`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -65,6 +50,8 @@ export const PlansApi = {
           }
 
           const plan = await planRes.json();
+          plan.startDate = subscription.start_date;
+          plan.subscription_id = subscription.id
           return plan;
         }
       }
@@ -73,23 +60,89 @@ export const PlansApi = {
     return null;
   },
 
-  setUserPlan: async (auth: string, plan: Plan) => {
-    await delay();
-    if (!auth) throw new Error("Unauthorized");
-    userSelectedPlanJson = JSON.stringify(plan);
-    return { success: true };
+  setUserPlan: async (refreshToken: string, plan: Plan) => {
+    const accessToken = await PlansApi.getNewAccessToken(refreshToken);
+    const res = await fetch("https://gym.mestracegonhas.com/api/subscriptions/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({"plan": plan.id}),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao assinar plano");
+    }
+
+    const resp = await res.json();
+    return resp;
+  },
+  
+  getLoyalty: async (refreshToken: string, subscription_id: string) => {
+    const accessToken = await PlansApi.getNewAccessToken(refreshToken);
+    const res = await fetch("https://gym.mestracegonhas.com/api/check-loyalty/?subscription_id=" + subscription_id, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Erro ao buscar usuário");
+    }
+
+    const loyalty = await res.json();
+    if(loyalty.in_loyalty_period){
+      return loyalty;
+    }else{
+      return null;
+    }
   },
 
-  cancelPlan: async (auth: string) => {
-    await delay();
-    if (!auth) throw new Error("Unauthorized");
-    userSelectedPlanJson = "";
-    return { success: true };
+  cancelPenaltyPlan: async (refreshToken: string, plan: Plan) => {
+    const accessToken = await PlansApi.getNewAccessToken(refreshToken);
+    const res = await fetch("https://gym.mestracegonhas.com/api/subscriptions/" + plan.subscription_id + "/cancel_with_penalty/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao cancelar plano");
+    }
+
+    const resp = await res.json();
+    return resp;
+  },
+
+  cancelNormalPlan: async (refreshToken: string, plan: Plan) => {
+    const accessToken = await PlansApi.getNewAccessToken(refreshToken);
+    const res = await fetch("https://gym.mestracegonhas.com/api/subscriptions/" + plan.subscription_id + "/cancel_subscription/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao cancelar plano");
+    }
+
+    const resp = await res.json();
+    return resp;
   },
   
   getUserId: async (refreshToken: string) => {
     const accessToken = await PlansApi.getNewAccessToken(refreshToken);
-    const res = await fetch("/api/users/me/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/users/me/", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -107,7 +160,7 @@ export const PlansApi = {
   },
 
   getNewAccessToken: async (refreshToken: string): Promise<string> => {
-    const res = await fetch("/api/token/refresh/", {
+    const res = await fetch("https://gym.mestracegonhas.com/api/token/refresh/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -136,6 +189,7 @@ interface Plan {
   duration_months: number;
   startDate?: string;
   endDate?: string;
+  subscription_id?: string;
 }
 
 interface Feature {

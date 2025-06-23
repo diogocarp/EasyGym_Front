@@ -35,6 +35,7 @@ interface Plan {
   duration_months: number;
   startDate?: string;
   endDate?: string;
+  subscription_id?: string;
 }
 
 interface Feature {
@@ -55,28 +56,30 @@ const MemberPlan = () => {
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [isConvinceModal, setIsConvinceModal] = useState(false);
   const [agreeWithCancelTerms, setAgreeWithCancelTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loyalty, setLoyalty] = useState<{in_loyalty_period:string, loyalty_end_date: string, remaining_days: number, penalty_value: number} | null>(null);
 
   useEffect(() => {
     const fetchPlans = async () => {
+      setIsLoading(true);
       try {
         const fetchedPlans = await PlansApi.getPlans();
         setPlans(fetchedPlans);
+        
+        const plan = await PlansApi.getUserPlan(refreshToken);
+        setSelectedPlan(plan);
+        
+        if(plan){
+          const loyalty = await PlansApi.getLoyalty(refreshToken, plan? plan.id.toString() : "0");
+          setLoyalty(loyalty);  
+        }
       } catch (e) {
         showToast("Erro ao carregar planos.", "error");
       }
-    };
-
-    const fetchUserPlan = async () => {
-      try {
-        const plan = await PlansApi.getUserPlan(refreshToken);
-        setSelectedPlan(plan);
-      } catch (e) {
-        showToast("Erro ao carregar plano do usuário.", "error");
-      }
+      setIsLoading(false);
     };
 
     fetchPlans();
-    fetchUserPlan();
   }, []);
 
   const handleSelect = (plan: Plan) => {
@@ -132,15 +135,15 @@ const MemberPlan = () => {
     }
   };
 
-  const handleCancel = () => {
-    if (!selectedPlan) return;
-
-    const noFidelity = selectedPlan.duration_months == 0;
-    if (noFidelity) setIsConvinceModal(true);
-    else setOpenConfirmModal(true);
+  const handleCancel = async () => {
+    if(loyalty?.in_loyalty_period){
+      setOpenConfirmModal(true);
+    }else{
+      setIsConvinceModal(true);
+    }
   };
 
-  const handleConfirmCancel = async () => {
+  const handleConfirmCancelNormal = async () => {
     if (!selectedPlan) return;
     if (!agreeWithCancelTerms && openConfirmModal) {
       showToast("Por favor, confirme o cancelamento antes de prosseguir...", "error");
@@ -148,7 +151,27 @@ const MemberPlan = () => {
     }
 
     try {
-      await PlansApi.cancelPlan(refreshToken);
+      await PlansApi.cancelNormalPlan(refreshToken, selectedPlan);
+      setSelectedPlan(null);
+      showToast("Plano cancelado com sucesso.", "success");
+    } catch (err: any) {
+      showToast(err.message || "Erro ao cancelar plano", "error");
+    } finally {
+      setAgreeWithCancelTerms(false);
+      setOpenConfirmModal(false);
+      setIsConvinceModal(false);
+    }
+  };
+
+  const handleConfirmCancelPenalty = async () => {
+    if (!selectedPlan) return;
+    if (!agreeWithCancelTerms && openConfirmModal) {
+      showToast("Por favor, confirme o cancelamento antes de prosseguir...", "error");
+      return;
+    }
+
+    try {
+      await PlansApi.cancelPenaltyPlan(refreshToken, selectedPlan);
       setSelectedPlan(null);
       showToast("Plano cancelado com sucesso.", "success");
     } catch (err: any) {
@@ -168,7 +191,17 @@ const MemberPlan = () => {
           <Title style={{paddingLeft: "10px"}}>Meu Plano</Title>
         </TitleBox>
 
-        {!selectedPlan && (
+        {isLoading && (
+          <PlansSection style={{ flexDirection: isMobile ? "column" : "row" }}>
+              <PlanCard>
+                <div>
+                  <Descricao>Carregando...</Descricao>
+                </div>
+              </PlanCard>
+          </PlansSection>
+        )}
+
+        {!selectedPlan && !isLoading && (
           <PlansSection style={{ flexDirection: isMobile ? "column" : "row" }}>
             {plans.map((plan) => (
               <PlanCard key={plan.id}>
@@ -194,7 +227,7 @@ const MemberPlan = () => {
           </PlansSection>
         )}
 
-        {selectedPlan && !confirmSelectionModal && (
+        {selectedPlan && !isLoading && !confirmSelectionModal && (
           <PlanContainer>
             <PlansSection style={{ flex: 1, paddingTop: isMobile? "15px" : "0px" }}>
               <Plan
@@ -207,8 +240,10 @@ const MemberPlan = () => {
               >
                 <Title style={{ textAlign: "center" }}>Plano {selectedPlan.name}</Title>
                 <PlanText>{selectedPlan.duration_months == 0 ? "Sem fidelidade" : selectedPlan.duration_months + " meses de fidelidade"}</PlanText>
-                {selectedPlan.startDate && selectedPlan.endDate && (
-                  <PlanText>Período de {selectedPlan.startDate} à {selectedPlan.endDate}</PlanText>
+                {selectedPlan.startDate && loyalty?.loyalty_end_date && (
+                  <PlanText>
+                    Período de {new Date(selectedPlan.startDate).toLocaleDateString('pt-BR')} à {new Date(loyalty.loyalty_end_date).toLocaleDateString('pt-BR')}
+                  </PlanText>
                 )}
                 <Button style={{ marginTop: "10px", alignSelf: "center" }} onClick={handleCancel}>
                   Cancelar Plano
@@ -240,9 +275,9 @@ const MemberPlan = () => {
       {/* Modal com fidelidade */}
       <Modal open={openConfirmModal} onClose={() => setOpenConfirmModal(false)}>
         <Box sx={getModalStyle}>
-          <center><h3 style={{ color: "white" }}>Você está em um plano com fidelidade. Tem certeza que deseja cancelar?</h3></center>
+          <center><h3 style={{ color: "white" }}>Você está em um plano com fidelidade até {loyalty && new Date(loyalty.loyalty_end_date).toLocaleDateString('pt-BR')}. Tem certeza que deseja cancelar?</h3></center>
           <br/>
-          <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>Ao confirmar, será aplicada uma multa de 15% sobre o valor restante das mensalidades.</p></center>
+          <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>Ao confirmar, será aplicada uma multa de {loyalty && loyalty.penalty_value}, referente a porcentagem das mensalidades restantes.</p></center>
           <br/>
           <label style={{ display: "flex", color: "white", alignItems: "center", fontSize: 13 }}>
             <input
@@ -251,10 +286,10 @@ const MemberPlan = () => {
               onChange={() => setAgreeWithCancelTerms(!agreeWithCancelTerms)}
               style={{ marginRight: "10px" }}
             />
-            <span style={{textAlign: "left"}}>Sim, estou ciente da multa de 15% e desejo prosseguir com o cancelamento.</span>
+            <span style={{textAlign: "left"}}>Sim, estou ciente da multa de {loyalty && loyalty.penalty_value} e desejo prosseguir com o cancelamento.</span>
           </label>
           <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
-            <Button onClick={handleConfirmCancel}>Confirmar</Button>
+            <Button onClick={handleConfirmCancelPenalty}>Confirmar</Button>
             <Button onClick={() => setOpenConfirmModal(false)}>Cancelar</Button>
           </div>
         </Box>
@@ -269,7 +304,7 @@ const MemberPlan = () => {
             Você ainda pode aproveitar todos os benefícios! Estamos sempre evoluindo para te oferecer a melhor experiência. Que tal continuar com a gente?
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "2rem" }}>
-            <Button onClick={handleConfirmCancel}>Sim, quero cancelar</Button>
+            <Button onClick={handleConfirmCancelNormal}>Sim, quero cancelar</Button>
             <Button onClick={() => setIsConvinceModal(false)}>Vou continuar</Button>
           </div>
         </Box>
