@@ -105,7 +105,7 @@ export const UserApi = {
     // Faz requisição
     const res = await fetch(url, {
       method: "GET",
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
     });
 
     if (!res.ok) {

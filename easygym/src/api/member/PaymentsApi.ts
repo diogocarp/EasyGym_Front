@@ -8,6 +8,7 @@ export const PaymentsApi = {
     const userRes = await fetch("https://gym.mestracegonhas.com/api/payments/?member_id=" + userId, {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });
@@ -51,6 +52,7 @@ export const PaymentsApi = {
     const response = await fetch("https://gym.mestracegonhas.com/api/users/payment/method/", {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(
@@ -74,6 +76,7 @@ export const PaymentsApi = {
     const userRes = await fetch("https://gym.mestracegonhas.com/api/users/payment/method/", {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });
@@ -99,6 +102,7 @@ export const PaymentsApi = {
     const response = await fetch("https://gym.mestracegonhas.com/api/users/payment/duedate/", {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ "dueDate": newDueDate })
@@ -117,6 +121,7 @@ export const PaymentsApi = {
     const userRes = await fetch("https://gym.mestracegonhas.com/api/users/payment/duedate/", {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });
@@ -141,6 +146,7 @@ export const PaymentsApi = {
     const res = await fetch("https://gym.mestracegonhas.com/api/users/me/", {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });

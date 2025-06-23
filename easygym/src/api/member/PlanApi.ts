@@ -23,6 +23,7 @@ export const PlansApi = {
     const userRes = await fetch("https://gym.mestracegonhas.com/api/subscriptions/?member_id=" + userId, {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });
@@ -40,6 +41,7 @@ export const PlansApi = {
           const planRes = await fetch(`https://gym.mestracegonhas.com/api/plans/${subscription.plan}/`, {
             method: "GET",
             headers: {
+              "Content-Type": "application/json",
               Authorization: `Bearer ${accessToken}`,
             },
           });
@@ -85,6 +87,7 @@ export const PlansApi = {
     const res = await fetch("https://gym.mestracegonhas.com/api/check-loyalty/?subscription_id=" + subscription_id, {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });
@@ -145,6 +148,7 @@ export const PlansApi = {
     const res = await fetch("https://gym.mestracegonhas.com/api/users/me/", {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });
