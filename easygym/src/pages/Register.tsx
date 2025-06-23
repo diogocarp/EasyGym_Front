@@ -112,7 +112,7 @@ const RegisterPage = () => {
             await AuthApi.register(payload);
             toast.success("Cadastro realizado com sucesso!", {
                 position: "bottom-right",
-                autoClose: 2000,
+                autoClose: 1000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,

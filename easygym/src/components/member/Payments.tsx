@@ -34,7 +34,7 @@ import { PaymentsApi } from '../../api/member/PaymentsApi';
 import Cookies from 'js-cookie';
 
 // === VARIÁVEIS FIXAS ===
-const VENCIMENTOS_FIXOS = ["5", "15", "27"];
+const VENCIMENTOS_FIXOS = ["6", "15", "30"];
 const METODOS_PAGAMENTO = [
   { value: "credit", label: "Cartão de crédito" },
   { value: "boleto", label: "Boleto bancário" },
@@ -108,8 +108,8 @@ const Payments = () => {
           PaymentsApi.getDueDate(refreshToken),
         ]);
         setPagamentos(pagamentos);
-        setPaymentMethod(metodo ? metodo : "Não cadastrado");
-        setDueDate(vencimento ? vencimento : "5");
+        setPaymentMethod(metodo);
+        setDueDate(vencimento);
       } catch (err: any) {
         showToast(err.message || "Erro ao carregar dados de pagamento", "error");
       }

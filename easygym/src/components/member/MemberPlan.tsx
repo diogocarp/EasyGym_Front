@@ -21,25 +21,28 @@ import x from "../../assets/img/home-assets/red-x.png";
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { toast, ToastContainer } from 'react-toastify';
-import { TOKEN } from '../../api/Token';
+
+//API
 import { PlansApi } from '../../api/member/PlanApi';
+import Cookies from 'js-cookie';
 
 interface Plan {
   id: number;
-  title: string;
+  name: string;
   description: string;
-  value: number;
+  price: number;
   features: Feature[];
-  fidelity: string;
+  duration_months: number;
   startDate?: string;
   endDate?: string;
 }
 
 interface Feature {
   name: string;
-  value: boolean;
+  available: string;
 }
 
+const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
 
 const MemberPlan = () => {
   const theme = useTheme();
@@ -56,7 +59,7 @@ const MemberPlan = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const fetchedPlans = await PlansApi.getPlans();
+        const fetchedPlans = await PlansApi.getPlans(refreshToken);
         setPlans(fetchedPlans);
       } catch (e) {
         showToast("Erro ao carregar planos.", "error");
@@ -65,7 +68,7 @@ const MemberPlan = () => {
 
     const fetchUserPlan = async () => {
       try {
-        const plan = await PlansApi.getUserPlan(TOKEN);
+        const plan = await PlansApi.getUserPlan(refreshToken);
         setSelectedPlan(plan);
       } catch (e) {
         showToast("Erro ao carregar plano do usuário.", "error");
@@ -118,7 +121,7 @@ const MemberPlan = () => {
     }
 
     try {
-      await PlansApi.setUserPlan(TOKEN, preSelectedPlan);
+      await PlansApi.setUserPlan(refreshToken, preSelectedPlan);
       setSelectedPlan(preSelectedPlan);
       showToast("Plano contratado com sucesso!", "success");
     } catch (err: any) {
@@ -132,7 +135,7 @@ const MemberPlan = () => {
   const handleCancel = () => {
     if (!selectedPlan) return;
 
-    const noFidelity = selectedPlan.fidelity.trim() === "" || selectedPlan.fidelity.trim().toLowerCase() === "sem fidelidade";
+    const noFidelity = selectedPlan.duration_months == 0;
     if (noFidelity) setIsConvinceModal(true);
     else setOpenConfirmModal(true);
   };
@@ -145,7 +148,7 @@ const MemberPlan = () => {
     }
 
     try {
-      await PlansApi.cancelPlan(TOKEN);
+      await PlansApi.cancelPlan(refreshToken);
       setSelectedPlan(null);
       showToast("Plano cancelado com sucesso.", "success");
     } catch (err: any) {
@@ -170,20 +173,20 @@ const MemberPlan = () => {
             {plans.map((plan) => (
               <PlanCard key={plan.id}>
                 <div>
-                  <Title>Plano {plan.title}</Title><br />
+                  <Title>Plano {plan.name}</Title><br />
                   <Descricao>{plan.description}</Descricao>
                 </div>
                 <div>
                   <PlanList>
                     {plan.features.map((feature, idx) => (
                       <PlanListItem key={idx}>
-                        <Icon src={feature.value ? ok : x} /> {feature.name}
+                        <Icon src={feature.available ? ok : x} /> {feature.name}
                       </PlanListItem>
                     ))}
                   </PlanList>
                   <hr style={{ marginBottom: "10px", borderColor: "#898989" }} />
-                  <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>R$ {plan.value} por mês</p></center>
-                  <center><p style={{ color: "#ccc", marginBottom: 10, fontSize: 12, fontStyle: "italic" }}>{plan.fidelity}</p></center>
+                  <center><p style={{ color: "#fff", marginBottom: 10, fontSize: 14 }}>R$ {plan.price} por mês</p></center>
+                  <center><p style={{ color: "#ccc", marginBottom: 10, fontSize: 12, fontStyle: "italic" }}>{plan.duration_months == 0 ? "Sem fidelidade" : plan.duration_months + " meses de fidelidade"}</p></center>
                   <Button onClick={() => handleSelect(plan)}>Quero Esse</Button>
                 </div>
               </PlanCard>
@@ -202,8 +205,8 @@ const MemberPlan = () => {
                   justifyContent: "center",
                 }}
               >
-                <Title style={{ textAlign: "center" }}>Plano {selectedPlan.title}</Title>
-                <PlanText>{selectedPlan.fidelity}</PlanText>
+                <Title style={{ textAlign: "center" }}>Plano {selectedPlan.name}</Title>
+                <PlanText>{selectedPlan.duration_months == 0 ? "Sem fidelidade" : selectedPlan.duration_months + " meses de fidelidade"}</PlanText>
                 {selectedPlan.startDate && selectedPlan.endDate && (
                   <PlanText>Período de {selectedPlan.startDate} à {selectedPlan.endDate}</PlanText>
                 )}
@@ -223,9 +226,9 @@ const MemberPlan = () => {
               }}
             >
               <PlanList>
-                {selectedPlan.features.map((feature, idx) => (
+                {selectedPlan.features?.map((feature, idx) => (
                   <PlanListItem key={idx}>
-                    <Icon src={feature.value ? ok : x} /> {feature.name}
+                    <Icon src={feature.available ? ok : x} /> {feature.name}
                   </PlanListItem>
                 ))}
               </PlanList>
@@ -278,19 +281,19 @@ const MemberPlan = () => {
           {preSelectedPlan && (
             <PlanCard style={{ marginTop: 20, background: "#434343", paddingBottom: "10px", padding: isMobile? "15px" : "20px" }}>
               <div>
-                <Title>Plano {preSelectedPlan.title}</Title>
+                <Title>Plano {preSelectedPlan.name}</Title>
                 <br/>
                 <Descricao>{preSelectedPlan.description}</Descricao>
                 <PlanList>
-                  {preSelectedPlan.features.map((feature, idx) => (
+                  {preSelectedPlan.features?.map((feature, idx) => (
                     <PlanListItem style={{marginTop: isMobile? "10px" : "15px", marginBottom: isMobile? "10px" : "15px"}} key={idx}>
-                      <Icon src={feature.value ? ok : x} /> {feature.name}
+                      <Icon src={feature.available ? ok : x} /> {feature.name}
                     </PlanListItem>
                   ))}
                 </PlanList>
                 <hr style={{ marginBottom: "10px", borderColor: "#898989" }} />
-                <p style={{ color: "#fff", marginTop: 10 }}>R$ {preSelectedPlan.value} por mês</p>
-                <p style={{ color: "#ccc", fontSize: 12 }}>{preSelectedPlan.fidelity}</p>
+                <p style={{ color: "#fff", marginTop: 10 }}>R$ {preSelectedPlan.price} por mês</p>
+                <p style={{ color: "#ccc", fontSize: 12 }}>{preSelectedPlan.duration_months == 0 ? "Sem fidelidade" : preSelectedPlan.duration_months + " meses de fidelidade"}</p>
               </div>
             </PlanCard>
           )}

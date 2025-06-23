@@ -1,5 +1,3 @@
-import { TOKEN } from '../Token';
-
 // Simula armazenamento dos dados
 let paymentList = [
   { month: "Maio 2025", due: "10/05/2025", value: "R$ 89,99", status: "Pago" },
@@ -7,9 +5,6 @@ let paymentList = [
   { month: "Julho 2025", due: "10/07/2025", value: "R$ 89,99", status: "Aguardando Pagamento" },
   { month: "Agosto 2025", due: "10/08/2025", value: "R$ 89,99", status: "A vencer" },
 ];
-
-let paymentMethod = "Cartão de crédito final 6613";
-let dueDate = "15";
 
 export const PaymentsApi = {
   getPayments: async (auth: string) => {
@@ -24,7 +19,7 @@ export const PaymentsApi = {
   },
 
   updatePaymentMethod: async (
-    auth: string,
+    refreshToken: string,
     method: string,
     cardData?: {
       name: string;
@@ -34,10 +29,7 @@ export const PaymentsApi = {
       address: string;
     }
   ) => {
-    if (auth !== TOKEN) throw new Error("Unauthorized");
     if (!method) throw new Error("Forma de pagamento inválida");
-
-    await delay();
 
     if (method === "credit") {
       if (
@@ -50,26 +42,33 @@ export const PaymentsApi = {
       ) {
         throw new Error("Dados do cartão incompletos");
       }
-
-      // Aqui você poderia fazer o "envio" para uma API real
-      console.log("Simulando envio do cartão:", cardData);
-
-      const lastDigits = cardData.number.slice(-4);
-      paymentMethod = `Cartão de crédito final ${lastDigits}`;
-    } else {
-      const labels: any = {
-        boleto: "Boleto",
-        pix: "Pix",
-      };
-      paymentMethod = labels[method] || "Outro método";
     }
 
-    return { success: true };
+    const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
+    const response = await fetch("api/users/payment/method/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(
+        { 
+          "method": method,
+          cardData
+        }
+      )
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message || "Erro ao atualizar método de pagamento");
+    }
+
+    return await response.json();
   },
 
   getPaymentMethod: async (refreshToken: string) => {
     const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-    const userRes = await fetch("/api/users/me/", {
+    const userRes = await fetch("api/users/payment/method/", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -83,40 +82,55 @@ export const PaymentsApi = {
     }
 
     const user = await userRes.json();
-    return user.payment_method_display;
+
+    if(user.body.length > 0){
+      return user.body[0].method;
+    }else{
+      return "Não cadastrado"
+    }
+    
   },
 
-  updateDueDate: async (auth: string, newDueDate: string) => {
-    if (auth !== TOKEN) throw new Error("Unauthorized");
-    if (!newDueDate) throw new Error("Data inválida");
-    await delay();
-    const responseCode = 200;
+  updateDueDate: async (refreshToken: string, newDueDate: string) => {
+    const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
+    const response = await fetch("api/users/payment/duedate/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ "dueDate": newDueDate })
+    });
 
-    if (responseCode === 200) {
-      dueDate = newDueDate;
-      return { success: true };
-    } else {
-      throw new Error("Erro ao atualizar data de due");
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message || "Erro ao atualizar data de vencimento");
     }
+
+    return await response.json();
   },
 
   getDueDate: async (refreshToken: string) => {
     const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-
-    const res = await fetch("/api/users/me/", {
+    const userRes = await fetch("api/users/payment/duedate/", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
 
-    if (!res.ok) {
-      const err = await res.json();
+
+    if (!userRes.ok) {
+      const err = await userRes.json();
       throw new Error(err.message || "Erro ao buscar data de vencimento");
     }
 
-    const user = await res.json();
-    return user.due_day;
+    const user = await userRes.json();
+
+    if(user.body.length > 0){
+      return user.body[0].dueDate;
+    }else{
+      return "6"
+    }
   },
 
   getNewAccessToken: async (refreshToken: string): Promise<string> => {
@@ -128,15 +142,12 @@ export const PaymentsApi = {
       body: JSON.stringify({"refresh": refreshToken}),
     });
 
-    console.log(JSON.stringify({"refresh": refreshToken}));
-
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.message || "Erro ao renovar token");
     }
 
     const data = await res.json();
-    console.log(data);
     return data.access;
   },
 };

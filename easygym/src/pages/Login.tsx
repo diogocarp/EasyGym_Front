@@ -57,13 +57,13 @@ const LoginPage = () => {
 
             toast.success("Login realizado com sucesso!", {
                 position: "bottom-right",
-                autoClose: 1500,
+                autoClose: 1000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
                 style: { backgroundColor: "#444", color: "white" },
-                onClose: () => { profile.is_staff ? navigate("/manager") : navigate("/member") }
+                onClose: () => { !profile.email_verified ? navigate("/confirm?email=" + profile.email) : (profile.is_staff ? navigate("/manager") : navigate("/member")) }
             });
         } catch (err: any) {
             showToast(err.message || "Erro ao fazer login", "error");

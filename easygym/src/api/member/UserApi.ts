@@ -133,7 +133,6 @@ export const UserApi = {
       body: JSON.stringify({"refresh": refreshToken}),
     });
 
-    console.log(JSON.stringify({"refresh": refreshToken}));
 
     if (!res.ok) {
       const err = await res.json();
@@ -141,7 +140,6 @@ export const UserApi = {
     }
 
     const data = await res.json();
-    console.log(data);
     return data.access;
   },
 };

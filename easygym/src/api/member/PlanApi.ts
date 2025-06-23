@@ -3,57 +3,76 @@ let userSelectedPlanJson = "";
 const plans = [
   {
     id: 1,
-    title: "TotalFit",
+    name: "TotalFit",
     description: "Treine na unidade com diversos beneficios únicos e atendimento customizado",
-    value: 129.99,
+    price: 129.99,
     features: [
-      { name: "Acesso à sauna e spa", value: true },
-      { name: "Consultas com Nutricionista", value: true },
-      { name: "Personal Trainer", value: true },
-      { name: "Área de musculação e cardio", value: true },
+      { name: "Acesso à sauna e spa", available: "true" }
     ],
-    fidelity: "12 meses de fidelidade",
-    startDate: "01/01/2025",
-    endDate: "31/12/2025"
-  },
-  {
-    id: 2,
-    title: "Essencial",
-    description: "Nosso plano mais econômico para você se exercitar quando quiser, com auxílio do nosso personal trainer",
-    value: 89.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: false },
-      { name: "Consultas com Nutricionista", value: false },
-      { name: "Personal Trainer", value: true },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "12 meses de fidelidade"
-  },
-  {
-    id: 3,
-    title: "Livre",
-    description: "Nosso plano mensal para você que não quer se comprometer, mas quer treinar em uma academia de alto padrão",
-    value: 109.99,
-    features: [
-      { name: "Acesso à sauna e spa", value: false },
-      { name: "Consultas com Nutricionista", value: false },
-      { name: "Personal Trainer", value: false },
-      { name: "Área de musculação e cardio", value: true },
-    ],
-    fidelity: "Sem fidelidade"
+    duration_months: 12
   }
 ];
 
 export const PlansApi = {
-  getPlans: async () => {
-    await delay();
+  getPlans: async (refreshToken: string) => {
+    const accessToken = await PlansApi.getNewAccessToken(refreshToken);
+
+    const userRes = await fetch("/api/plans/?ordering=name", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!userRes.ok) {
+      const err = await userRes.json();
+      throw new Error(err.message || "Erro ao buscar planos");
+    }
+
+    const plans = await userRes.json();
     return plans;
   },
 
-  getUserPlan: async (auth: string) => {
-    await delay();
-    if (!auth) throw new Error("Unauthorized");
-    return userSelectedPlanJson ? JSON.parse(userSelectedPlanJson) : null;
+  getUserPlan: async (refreshToken: string) => {
+    const userId = await PlansApi.getUserId(refreshToken);
+
+    var accessToken = await PlansApi.getNewAccessToken(refreshToken);
+    const userRes = await fetch("/api/subscriptions/?member_id=" + userId, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!userRes.ok) {
+      const err = await userRes.json();
+      throw new Error(err.message || "Erro ao buscar assinatura do usuário");
+    }
+
+    const subscriptions = await userRes.json();
+
+    if (subscriptions.length > 0) {
+      for (const subscription of subscriptions) {
+        if (subscription.is_active) {
+          const planRes = await fetch(`/api/plans/${subscription.plan}/`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          if (!planRes.ok) {
+            const err = await planRes.json();
+            throw new Error(err.message || "Erro ao buscar plano do usuário");
+          }
+
+          const plan = await planRes.json();
+          return plan;
+        }
+      }
+    }
+
+    return null;
   },
 
   setUserPlan: async (auth: string, plan: Plan) => {
@@ -68,23 +87,60 @@ export const PlansApi = {
     if (!auth) throw new Error("Unauthorized");
     userSelectedPlanJson = "";
     return { success: true };
-  }
+  },
+  
+  getUserId: async (refreshToken: string) => {
+    const accessToken = await PlansApi.getNewAccessToken(refreshToken);
+    const res = await fetch("/api/users/me/", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Erro ao buscar usuário");
+    }
+
+    const user = await res.json();
+    const { id } = user;
+    return id;
+  },
+
+  getNewAccessToken: async (refreshToken: string): Promise<string> => {
+    const res = await fetch("/api/token/refresh/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({"refresh": refreshToken}),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao renovar token");
+    }
+
+    const data = await res.json();
+    return data.access;
+  },
 };
 
 const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
 
-export interface Plan {
+interface Plan {
   id: number;
-  title: string;
+  name: string;
   description: string;
-  value: number;
+  price: number;
   features: Feature[];
-  fidelity: string;
+  duration_months: number;
   startDate?: string;
   endDate?: string;
 }
 
 interface Feature {
   name: string;
-  value: boolean;
+  available: string;
 }

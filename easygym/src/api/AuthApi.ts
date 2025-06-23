@@ -56,6 +56,27 @@ export const AuthApi = {
       }
    },
 
+   resendEmail: async (email: string) => {
+      try {
+         const response = await fetch("/api/users/resend-email/", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json"
+            },
+            body: JSON.stringify({"email": email})
+         });
+
+         if (response.ok) {
+            return { success: true };
+         } else {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || "Email inválido.");
+         }
+      } catch (error: any) {
+         throw new Error(error.message || "Erro ao confirmar e-mail.");
+      }
+   },
+
    login: async (username: string, password: string) => {
       try {
          const response = await fetch("/api/token/", {
