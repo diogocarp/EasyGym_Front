@@ -37,7 +37,7 @@ getNewAccessToken: async (refreshToken: string): Promise<string> => {
 
   getPlans: async (): Promise<Plan[]> => {
 
-    const response = await fetch("/api/plans/", {
+    const response = await fetch("https://gym.mestracegonhas.com/api/plans/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
