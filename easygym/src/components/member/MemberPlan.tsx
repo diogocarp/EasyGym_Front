@@ -43,8 +43,6 @@ interface Feature {
   available: string;
 }
 
-const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
-
 const MemberPlan = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(900));
@@ -58,6 +56,8 @@ const MemberPlan = () => {
   const [agreeWithCancelTerms, setAgreeWithCancelTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loyalty, setLoyalty] = useState<{in_loyalty_period:string, loyalty_end_date: string, remaining_days: number, penalty_value: number} | null>(null);
+
+  const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -125,7 +125,13 @@ const MemberPlan = () => {
 
     try {
       await PlansApi.setUserPlan(refreshToken, preSelectedPlan);
-      setSelectedPlan(preSelectedPlan);
+      const plan = await PlansApi.getUserPlan(refreshToken);
+      setSelectedPlan(plan);
+        
+      if(plan){
+        const loyalty = await PlansApi.getLoyalty(refreshToken, plan? plan.id.toString() : "0");
+        setLoyalty(loyalty);  
+      }
       showToast("Plano contratado com sucesso!", "success");
     } catch (err: any) {
       showToast(err.message || "Erro ao contratar plano", "error");
