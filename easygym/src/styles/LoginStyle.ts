@@ -149,4 +149,32 @@ const Button = styled.button`
   }
 `;
 
-export { Container, Section, Card, Logo, InputContainer, Input, Options, Checkbox, Link, Button, RootSection };
+const SectionTitle = styled.h3`
+  margin-bottom: 1rem;
+  color: white;
+  font-size: 1.4rem;
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+  }
+`;
+
+const Row = styled.div`
+  width: 100%;
+  display:flex;
+  gap: 10px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: 480px) {
+    justify-content: stretch;
+  }
+`;
+
+export { Container, Section, Card, Logo, InputContainer, Input, Options, Checkbox, Link, Button, RootSection, SectionTitle, Row, ButtonContainer };

@@ -116,7 +116,7 @@ getNewAccessToken: async (refreshToken: string): Promise<string> => {
       id: user.id,
       name: user.full_name,
       email: user.email,
-      cpf: user.customer_doc,
+      cpf: user.customer_doc.replace(/[.-]/g, ""),
       tel: user.phone,
       birth: user.date_of_birth,
       status: user.is_active
@@ -139,7 +139,7 @@ getNewAccessToken: async (refreshToken: string): Promise<string> => {
         phone: updated.tel,
         date_of_birth: updated.birth,
         is_active: updated.status,
-        customer_doc: updated.cpf
+        customer_doc: updated.cpf.replace(/[.-]/g, "")
       })
     });
 

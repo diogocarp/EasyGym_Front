@@ -58,9 +58,33 @@ export const AuthApi = {
       }
    },
 
+   resetPassword: async (token: string, password: string, password_confirmation: string) => {
+      try {
+         const response = await fetch("/api/users/reset-password-confirm/" + token + "/", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+               "password": password,
+               "password_confirmation" : password_confirmation
+            })
+         });
+
+         if (response.ok) {
+            return { success: true };
+         } else {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || "Token inválido ou expirado.");
+         }
+      } catch (error: any) {
+         throw new Error(error.message || "Erro ao confirmar e-mail.");
+      }
+   },
+
    resendEmail: async (email: string) => {
       try {
-         const response = await fetch("/api/users/resend-email/", {
+         const response = await fetch("/api/users/resend-verification/", {
             method: "POST",
             headers: {
                "Content-Type": "application/json"
@@ -81,6 +105,10 @@ export const AuthApi = {
 
    login: async (username: string, password: string) => {
       try {
+         if (!username.includes("@")) {
+            username = username.replace(/[.\-]/g, "");
+         }
+
          const response = await fetch("/api/token/", {
             method: "POST",
             headers: {
@@ -116,5 +144,44 @@ export const AuthApi = {
     } catch (error: any) {
       throw new Error(error.message || "Erro ao buscar dados do usuário.");
     }
-  }
+  },
+
+  getNewAccessToken: async (refreshToken: string): Promise<string> => {
+    const res = await fetch("/api/token/refresh/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({"refresh": refreshToken}),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Erro ao renovar token");
+    }
+
+    const data = await res.json();
+    return data.access;
+  },
+
+   sendReset: async (email: string) => {
+      try {
+         const response = await fetch("/api/users/reset-password/", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json"
+            },
+            body: JSON.stringify({"email": email})
+         });
+
+         if (response.ok) {
+            return { success: true };
+         } else {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || "Email inválido.");
+         }
+      } catch (error: any) {
+         throw new Error(error.message || "Erro ao confirmar e-mail.");
+      }
+   },
 };

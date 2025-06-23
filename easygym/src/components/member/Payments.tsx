@@ -55,10 +55,18 @@ const modalStyle = {
 };
 
 type paymentType = {
-    month: string;
-    due: string;
-    value: string;
+    id: number;
+    subscription: number;
+    subscription_details: string;
+    amount: string;
+    due_date: string;
+    paid_date: string;
     status: string;
+    external_payment_id: string;
+    invoice: string;
+    payment_url: string;
+    is_active: boolean;
+    is_paid: string;
 }
 
 const Payments = () => {
@@ -157,6 +165,22 @@ const Payments = () => {
     }
   };
 
+  const formatToMonthYear = (dateString: string) => {
+    const [year, month, day] = dateString.split('-');
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    const monthName = months[parseInt(month) - 1];
+    return `${monthName}-${year}`;
+  }
+
+  const formatToDayMonthYear = (dateString: string) => {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  }
+
+
   return (
     <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", width: "100%" }}>
       <Wrapper>
@@ -167,15 +191,22 @@ const Payments = () => {
           </TitleCard>
 
           <PaymentsDiv>
-            {pagamentos.map((p, i) => (
+            {pagamentos.length == 0 && (
+              <PaymentCard>
+                <PaymentInfo>
+                  <div>Nenhum fatura pendente</div>
+                </PaymentInfo>
+              </PaymentCard>
+            )}
+            {pagamentos.length > 0 && pagamentos.map((p, i) => (
               <PaymentCard key={i}>
                 <PaymentInfo>
-                  <div><strong>{p.month}</strong></div>
-                  <PaymentLabel>Vencimento {p.due}</PaymentLabel>
+                  <div><strong>{formatToMonthYear(p.due_date)}</strong></div>
+                  <PaymentLabel>Vencimento {formatToDayMonthYear(p.due_date)}</PaymentLabel>
                 </PaymentInfo>
                 <Value>
                   <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Valor</Text>
-                  <ValueDescription>{p.value}</ValueDescription>
+                  <ValueDescription>{p.amount}</ValueDescription>
                 </Value>
                 <StatusDiv>
                   <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Status</Text>

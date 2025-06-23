@@ -7,34 +7,54 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from "react";
 import { Email } from "@mui/icons-material";
+import { AuthApi } from '../api/AuthApi';
 
 const ResetPasswordPage = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    
+    
+    const showToast = (
+        message: string,
+        type: 'success' | 'error' | 'info',
+        duration = 3000
+        ) => {
+        toast[type](message, {
+            position: "bottom-right",
+            autoClose: duration,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: type !== 'info',
+            draggable: true,
+            style: { backgroundColor: "#444", color: "white" },
+        });
+    };
 
-    const handleLogin = () => {
+    const handleReset = async () => {
+
+        setIsLoading(true);
 
         if (email) {
-            toast.success("Recuperação de senha enviada com sucesso!", {
-                position: "bottom-right",
-                autoClose: 2500,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                style: { backgroundColor: "#444", color: "white" },
-                onClose: () => navigate("/confirmedReset")
-            });
+            try {
+                await AuthApi.sendReset(email);
+                toast.success("Recuperação de senha enviada com sucesso!", {
+                    position: "bottom-right",
+                    autoClose: 1000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    style: { backgroundColor: "#444", color: "white" },
+                    onClose: () => navigate("/confirmReset")
+                });
+            } catch (err: any) {
+                showToast(err.message || "Erro desconhecido", "error");
+                setIsLoading(false);
+            }
         } else {
-            toast.error("Por favor, insira um email válido.", {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                style: { backgroundColor: "#444", color: "white" }
-            });
+            showToast("Por favor, insira um email válido.", "error");
+            setIsLoading(false);
         }
     };
 
@@ -53,10 +73,10 @@ const ResetPasswordPage = () => {
 
                             <InputContainer>
                                 <Email style={{ marginRight: "-10px", marginLeft: "10px", position: "absolute"}} />
-                                <Input style={{ paddingLeft: "45px" }} type="text" placeholder="Digite seu email" onChange={(e) => setEmail(e.target.value)} />
+                                <Input disabled={isLoading} style={{ paddingLeft: "45px" }} type="text" placeholder="Digite seu email" onChange={(e) => setEmail(e.target.value)} />
                             </InputContainer>
 
-                            <Button onClick={() => handleLogin()}>Enviar</Button>
+                            <Button onClick={() => handleReset()} disabled={isLoading}>{isLoading ? "Carregando..." : "Enviar"}</Button>
                         </Card>
                     </Container>
                 </Section>

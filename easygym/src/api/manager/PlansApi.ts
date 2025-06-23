@@ -35,15 +35,12 @@ getNewAccessToken: async (refreshToken: string): Promise<string> => {
     return data.access;
   },
 
-  getPlans: async (auth: string): Promise<Plan[]> => {
-
-    const accessToken = await PlansApi.getNewAccessToken(auth);
+  getPlans: async (): Promise<Plan[]> => {
 
     const response = await fetch("/api/plans/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`
       }
     });
 

@@ -33,38 +33,38 @@ const Dashboard = () => {
   const colorsFreq = ['#323132', '#444'];
 
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
-const [startDate, setStartDate] = useState("2025-01-01");
+  const [startDate, setStartDate] = useState("2025-01-01");
 
-const getToday = () => {
-  const today = new Date();
-  return today.toISOString().split("T")[0]; 
-};
-
-const [endDate, setEndDate] = useState(getToday());
-
- useEffect(() => {
-
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  if (start > end) {
-    alert("A data inicial não pode ser maior que a data final.");
-    return;
-  }
-  
-  const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
-
-  const fetchData = async () => {
-    try {
-      const data = await DashboardApi.getMetrics(refreshToken, startDate, endDate);
-      setDashboardData(data);
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao carregar dados do dashboard");
-    }
+  const getToday = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0]; 
   };
 
-  fetchData();
-}, [startDate, endDate]);
+  const [endDate, setEndDate] = useState(getToday());
+
+  useEffect(() => {
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start > end) {
+      alert("A data inicial não pode ser maior que a data final.");
+      return;
+    }
+    
+    const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
+
+    const fetchData = async () => {
+      try {
+        const data = await DashboardApi.getMetrics(refreshToken, startDate, endDate);
+        setDashboardData(data);
+      } catch (err: any) {
+        toast.error(err.message || "Erro ao carregar dados do dashboard");
+      }
+    };
+
+    fetchData();
+  }, [startDate, endDate]);
 
   const dataFreq = dashboardData ? [
     { name: "Ativos", value: dashboardData.frequency.active },
@@ -83,7 +83,7 @@ const [endDate, setEndDate] = useState(getToday());
   ] : [];
 
   return (
-    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row" }}>
+    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", padding: isMobile? "10px" : "24px 24px 0px 24px" }}>
       <Container style={{ flexGrow: "1" }}>
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row" }}>
           <div>
@@ -103,6 +103,7 @@ const [endDate, setEndDate] = useState(getToday());
                     color: "#fff",
                     backgroundColor: "rgba(255, 255, 255, 0.08)",
                     borderRadius: "8px",
+                    fontSize: "12px"
                   },
                   label: { color: "#ccc" },
                   fieldset: { borderColor: "#555" },
@@ -122,6 +123,7 @@ const [endDate, setEndDate] = useState(getToday());
                     color: "#fff",
                     backgroundColor: "rgba(255, 255, 255, 0.08)",
                     borderRadius: "8px",
+                    fontSize: "12px"
                   },
                   label: { color: "#ccc" },
                   fieldset: { borderColor: "#555" },
@@ -163,8 +165,8 @@ const [endDate, setEndDate] = useState(getToday());
             alignItems: "center",
             flexDirection: isMobile ? "column" : "row"
           }}>
-            <PieChart width={325} height={200}>
-              <Pie data={dataFreq} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} fill="#ccc">
+            <PieChart width={isMobile? window.innerWidth - 35 : 325} height={200}>
+              <Pie data={dataFreq} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={isMobile ? window.innerWidth / 6 : 75} fill="#ccc">
                 {dataFreq.map((_, index) => (
                   <Cell key={`freq-cell-${index}`} fill={colorsFreq[index % colorsFreq.length]} />
                 ))}
@@ -174,8 +176,8 @@ const [endDate, setEndDate] = useState(getToday());
               <Tooltip />
             </PieChart>
 
-            <PieChart width={325} height={200}>
-              <Pie data={dataMatri} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} fill="#ccc">
+            <PieChart width={isMobile? window.innerWidth - 35 : 325} height={200}>
+              <Pie data={dataMatri} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={isMobile ? window.innerWidth / 6 : 75} fill="#ccc">
                 {dataMatri.map((_, index) => (
                   <Cell key={`matri-cell-${index}`} fill={colorsFreq[index % colorsFreq.length]} />
                 ))}
@@ -205,7 +207,7 @@ const [endDate, setEndDate] = useState(getToday());
               </Square>
             </FrequencySquare>
             <FrequencySquare style={{ width: isMobile ? "100%" : "300px" }}>
-              <Square>
+              <Square style={{width: "calc(50% - 5px)"}}>
                 <SquareImage src={check} alt="Adimplentes" />
                 <SquareTitle>Adimplentes</SquareTitle>
                 <SquareData>{dataFinan.find(d => d.name === "Adimplentes")?.value}</SquareData>
@@ -218,8 +220,8 @@ const [endDate, setEndDate] = useState(getToday());
             justifyContent: "center",
             alignItems: "center"
           }}>
-            <PieChart width={325} height={200}>
-              <Pie data={dataFinan} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} fill="black">
+            <PieChart width={isMobile? window.innerWidth - 35 : 325} height={200}>
+              <Pie data={dataFinan} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={isMobile ? window.innerWidth / 6 : 75} fill="black">
                 {dataFinan.map((_, index) => (
                   <Cell key={`finan-cell-${index}`} fill={colorsFinan[index % colorsFinan.length]} />
                 ))}

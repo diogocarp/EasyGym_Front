@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { IMaskInput } from 'react-imask';
 
 const Member = styled.div`
-  padding: 10px 20px 10px 20px;
   color: white;
 `;
 
@@ -82,7 +81,6 @@ const FilterContainer = styled.div`
 
 const MembersIcon = styled(People)`
     color:white;
-    margin-left:20px;
     
 `
 

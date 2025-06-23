@@ -59,7 +59,7 @@ const MemberPlan = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const fetchedPlans = await PlansApi.getPlans(refreshToken);
+        const fetchedPlans = await PlansApi.getPlans();
         setPlans(fetchedPlans);
       } catch (e) {
         showToast("Erro ao carregar planos.", "error");

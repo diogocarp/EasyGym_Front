@@ -1,21 +1,24 @@
 // Simula armazenamento dos dados
-let paymentList = [
-  { month: "Maio 2025", due: "10/05/2025", value: "R$ 89,99", status: "Pago" },
-  { month: "Junho 2025", due: "10/06/2025", value: "R$ 89,99", status: "Pago" },
-  { month: "Julho 2025", due: "10/07/2025", value: "R$ 89,99", status: "Aguardando Pagamento" },
-  { month: "Agosto 2025", due: "10/08/2025", value: "R$ 89,99", status: "A vencer" },
-];
 
 export const PaymentsApi = {
-  getPayments: async (auth: string) => {
-    await delay();
-    const responseCode = 200;
+  getPayments: async (refreshToken: string) => {
+    const userId = await PaymentsApi.getUserId(refreshToken);
 
-    if (responseCode === 200) {
-      return paymentList;
-    } else {
-      throw new Error("Erro ao buscar pagamentos");
+    var accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
+    const userRes = await fetch("/api/payments/?member_id=" + userId, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!userRes.ok) {
+      const err = await userRes.json();
+      throw new Error(err.message || "Erro ao buscar assinatura do usuário");
     }
+
+    const paymentList = await userRes.json();
+    return paymentList;
   },
 
   updatePaymentMethod: async (
@@ -133,6 +136,25 @@ export const PaymentsApi = {
     }
   },
 
+  getUserId: async (refreshToken: string) => {
+    const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
+    const res = await fetch("/api/users/me/", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Erro ao buscar usuário");
+    }
+
+    const user = await res.json();
+    const { id } = user;
+    return id;
+  },
+
   getNewAccessToken: async (refreshToken: string): Promise<string> => {
     const res = await fetch("/api/token/refresh/", {
       method: "POST",
@@ -151,5 +173,3 @@ export const PaymentsApi = {
     return data.access;
   },
 };
-
-const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));

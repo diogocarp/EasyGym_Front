@@ -14,16 +14,6 @@ import { toast } from "react-toastify";
 
 import Cookies from 'js-cookie';
 
-const modalStyle = {
-  position: 'absolute',
-  top: '50%', left: '50%',
-  transform: 'translate(-50%, -50%)',
-  bgcolor: '#333',
-  boxShadow: 24, p: 4,
-  borderRadius: "8px",
-  width: "400px"
-};
-
 const Members = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1000));
@@ -41,7 +31,8 @@ useEffect(() => {
     try {
       const filtered = await MembersApi.filterMembers(refreshToken, {
         full_name__icontains: name,
-        customer_doc__icontains: cpf.replace(/[.-]/g, "")
+        customer_doc__icontains: cpf.replace(/[.-]/g, ""),
+        role: "MEMBER",
       });
       setFilteredStudents(filtered);
     } catch (err: any) {
@@ -109,8 +100,26 @@ useEffect(() => {
     setFilteredStudents(students);
   }, [students]);
 
+  const getModalStyle = () => {
+    return {
+      position: 'absolute', top: '50%', left: '50%',
+      transform: 'translate(-50%, -50%)',
+      bgcolor: '#333', boxShadow: 24, p: 4,
+      borderRadius: isMobile? "0px" : "8px", 
+      maxWidth: "600px",
+      width: "100%",
+      maxHeight: "100%",
+      height: isMobile? "100%" : "auto",
+      padding: isMobile? "15px" : "32px",
+      overflowY: "auto",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center"
+    };
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row" }}>
+    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", padding: isMobile? "10px" : "24px 24px 0px 24px" }}>
       <Container style={{width: "100%"}}>
         <Frequency>
           <MembersIcon fontSize="large" />
@@ -139,7 +148,7 @@ useEffect(() => {
               <Card key={index} style={{ backgroundColor: student.status ? "" : "#7d3f3f", minHeight: "75px" }}>
                 <MemberInfo>
                   <h5>{student.name}</h5>
-                  <p style={{fontSize: "14px"}}>{student.cpf}</p>
+                  <p style={{fontSize: "14px"}}>{student.cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4")}</p>
                 </MemberInfo>
                 <Actions>
                   <Button onClick={() => handleEdit(index)}>
@@ -153,10 +162,10 @@ useEffect(() => {
       </Container>
 
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
-        <Box sx={modalStyle}>
+        <Box sx={getModalStyle}>
           <h2 style={{ color: "white" }}>Editar Aluno</h2>
           <InputContainerEdit><Input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Nome" /></InputContainerEdit>
-          <InputContainerEdit><Input value={editCPF} disabled placeholder="CPF" /></InputContainerEdit>
+          <InputContainerEdit><Input value={editCPF.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4")} disabled placeholder="CPF" /></InputContainerEdit>
           <InputContainerEdit><Input value={editEmail} disabled placeholder="Email" /></InputContainerEdit>
           <InputContainerEdit>
             <InputMasked value={editCelular} 

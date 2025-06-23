@@ -15,7 +15,7 @@ const GymIcon = styled(FitnessCenter)`
 const Square = styled.div`
   background: linear-gradient(to bottom, #444, #3a3a3a);
   width:50%;
-  height:120px;
+  height:115px;
   align-content: center;
   
 `;
@@ -36,23 +36,23 @@ const SquareTitle = styled.p`
 
 const SquareData = styled.p`
   color: #fff;
-  font-size: 18px;
+  font-size: 16px;
   text-align:center
 `;
 
 const Frequency = styled.div`
   display:flex; 
   align-items:center;
-  padding: 20px 10px 10px 10px
+  padding-bottom: 20px
 `;
 
 const FrequencySquare = styled.div`
-  padding:0px 0px 10px 10px;
+  padding:0px 0px 10px 0px;
   display: flex;
   gap: 10px;
 `;
 
-const Title = styled.h3`
+const Title = styled.h4`
     color:white;
     text-align:left;
     padding-left:10px;

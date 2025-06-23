@@ -9,14 +9,13 @@ const Container = styled.div`
 
 const GymIcon = styled(FitnessCenter)`
     color:white;
-    margin-left:20px;
     
 `
 
 const Frequency = styled.div`
   display:flex; 
   align-items:center;
-  padding: 20px 10px 10px 10px
+  padding-bottom: 20px
 `;
 
 const Title = styled.h3`
@@ -53,7 +52,6 @@ const PlansSection = styled.section`
   display: flex;
   justify-content: center;
   gap: 2px;
-  padding: 40px;
 `;
 
 const PlanCard = styled.div`

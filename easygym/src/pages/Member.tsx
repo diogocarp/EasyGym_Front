@@ -3,6 +3,7 @@ import Sidebar from "../components/sidebars/SidebarMember";
 import MemberPlan from "../components/member/MemberPlan";
 import Settings from "../components/member/Settings";
 import Payments from "../components/member/Payments";
+import Page404 from "./Page404";
 import { useTheme, useMediaQuery, IconButton } from "@mui/material";
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import { useNavigate } from "react-router-dom";
@@ -15,10 +16,10 @@ const MemberPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
+  const sessionRefresh = sessionStorage.getItem("refreshToken");
+  const cookieRefresh = Cookies.get("refreshToken");
 
   useEffect(() => {
-    const sessionRefresh = sessionStorage.getItem("refreshToken");
-    const cookieRefresh = Cookies.get("refreshToken");
 
     if (!sessionRefresh && !cookieRefresh) {
       navigate("/login");
@@ -26,15 +27,19 @@ const MemberPage: React.FC = () => {
   }, [navigate]);
 
   const renderPage = (): JSX.Element => {
-    switch (activePage) {
-      case "member":
-        return <MemberPlan />;
-      case "payments":
-        return <Payments />;
-      case "settings":
-        return <Settings />;
-      default:
-        return <MemberPlan />;
+    if (sessionRefresh || cookieRefresh) {
+      switch (activePage) {
+        case "member":
+          return <MemberPlan />;
+        case "payments":
+          return <Payments />;
+        case "settings":
+          return <Settings />;
+        default:
+          return <MemberPlan />;
+      }
+    }else{
+        return <Page404 />;
     }
   };
 

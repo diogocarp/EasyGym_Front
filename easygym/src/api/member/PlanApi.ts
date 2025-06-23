@@ -14,13 +14,11 @@ const plans = [
 ];
 
 export const PlansApi = {
-  getPlans: async (refreshToken: string) => {
-    const accessToken = await PlansApi.getNewAccessToken(refreshToken);
-
+  getPlans: async () => {
     const userRes = await fetch("/api/plans/?ordering=name", {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
     });
 
