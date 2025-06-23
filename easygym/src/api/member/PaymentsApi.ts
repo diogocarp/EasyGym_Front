@@ -5,7 +5,7 @@ export const PaymentsApi = {
     const userId = await PaymentsApi.getUserId(refreshToken);
 
     var accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
-    const userRes = await fetch("https://gym.mestracegonhas.com/api/payments/?member_id=" + userId, {
+    const userRes = await fetch("https://gym.mestracegonhas.com/api/payments/?ordering=due_date&member_id=" + userId, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -66,6 +66,24 @@ export const PaymentsApi = {
     if (!response.ok) {
       const err = await response.json();
       throw new Error(err.message || "Erro ao atualizar método de pagamento");
+    }
+
+    return await response.json();
+  },
+
+  sendEmail: async (refreshToken: string, id: number) => {
+    const accessToken = await PaymentsApi.getNewAccessToken(refreshToken);
+    const response = await fetch("https://gym.mestracegonhas.com/api/payments/email/" + id + "/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      }
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message || "Erro enviar email");
     }
 
     return await response.json();

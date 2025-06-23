@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { AttachMoneyOutlined } from "@mui/icons-material";
+import { AttachMoneyOutlined, Mail } from "@mui/icons-material";
 import { IMaskInput } from "react-imask";
 
 const PaymentTitle = styled.h1`
@@ -198,6 +198,10 @@ const MoneyIcon = styled(AttachMoneyOutlined)`
     color:white;
 `
 
+const MailIcon = styled(Mail)`
+    color:white;
+`
+
 const Title = styled.h3`
     color:white;
     text-align:left;
@@ -271,11 +275,15 @@ const Tag = styled.span<{ status: string }>`
 
   background-color: ${({ status }) => {
     switch (status) {
-      case "Pago":
+      case "PAID":
         return "#1e7f14";
-      case "Aguardando Pagamento":
+      case "OVERDUE":
+        return "#731a0e";
+      case "CANCELED":
+        return "#212121";
+      case "PENALTY":
         return "#c7311c";
-      case "A Vencer":
+      case "PENDING":
         return "#757575";
       default:
         return "#757575";
@@ -337,5 +345,6 @@ export {
   InputContainer,
   PaymentsDiv,
   Tag,
-  CustomMaskedInput
+  CustomMaskedInput,
+  MailIcon
 };

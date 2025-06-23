@@ -20,6 +20,7 @@ import {
   TitleCard,
   Container,
   MoneyIcon,
+  MailIcon,
   Title,
   Input,
   InputContainer,
@@ -68,6 +69,14 @@ type paymentType = {
     is_active: boolean;
     is_paid: string;
 }
+
+const statusMap: Record<string, string> = {
+  PENDING: "Pendente",
+  PAID: "Pago",
+  OVERDUE: "Atrasado",
+  CANCELED: "Cancelado",
+  PENALTY: "Multa",
+};
 
 const Payments = () => {
   const theme = useTheme();
@@ -155,6 +164,16 @@ const Payments = () => {
     setOpenPaymentModal(false);
   };
 
+  const handleSendEmail = async (id: number) => {
+    try {
+      await PaymentsApi.sendEmail(refreshToken, id);
+
+      showToast("Email de pagamento enviado com sucesso!", "success");
+    } catch (err: any) {
+      showToast(err.message || "Erro ao atualizar forma de pagamento", "error");
+    }
+  };
+
   const handleSaveDueDate = async () => {
     try {
       await PaymentsApi.updateDueDate(refreshToken, dueDate);
@@ -168,11 +187,11 @@ const Payments = () => {
   const formatToMonthYear = (dateString: string) => {
     const [year, month] = dateString.split('-');
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ];
     const monthName = months[parseInt(month) - 1];
-    return `${monthName}-${year}`;
+    return `${monthName} ${year}`;
   }
 
   const formatToDayMonthYear = (dateString: string) => {
@@ -208,10 +227,22 @@ const Payments = () => {
                   <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Valor</Text>
                   <ValueDescription>{p.amount}</ValueDescription>
                 </Value>
+                <Value>
+                  <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Data de Pagamento</Text>
+                  <ValueDescription>{(p.paid_date) ? formatToDayMonthYear(p.paid_date) : "N/A"}</ValueDescription>
+                </Value>
                 <StatusDiv>
                   <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Status</Text>
-                  <Tag status={p.status}>{p.status}</Tag>
+                  <Tag status={p.status}>{statusMap[p.status] || p.status}</Tag>
                 </StatusDiv>
+                <Value>
+                  {(p.status !== "PAID" && p.status !== "CANCELED") && (
+                    <>
+                      <Text style={{ marginBottom: "10px", fontWeight: "bold" }}>Enviar email</Text>
+                      <MailIcon onClick={() => handleSendEmail(p.id)} style={{ cursor: "pointer" }} fontSize="medium" />
+                    </>
+                  )}
+                </Value>
               </PaymentCard>
             ))}
           </PaymentsDiv>
