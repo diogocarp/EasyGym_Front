@@ -35,7 +35,7 @@ import { PaymentsApi } from '../../api/member/PaymentsApi';
 import Cookies from 'js-cookie';
 
 // === VARIÁVEIS FIXAS ===
-const VENCIMENTOS_FIXOS = ["6", "15", "30"];
+const VENCIMENTOS_FIXOS = ["6", "15", "28"];
 const METODOS_PAGAMENTO = [
   { value: "credit", label: "Cartão de crédito" },
   { value: "boleto", label: "Boleto bancário" },

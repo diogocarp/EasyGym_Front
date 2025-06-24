@@ -19,6 +19,31 @@ import { toast, ToastContainer } from "react-toastify";
 
 import { AuthApi } from '../api/AuthApi';
 
+function isValidCPF(cpf: string): boolean {
+    cpf = cpf.replace(/[^\d]+/g, '');
+
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+        sum += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let checkDigit1 = 11 - (sum % 11);
+    if (checkDigit1 >= 10) checkDigit1 = 0;
+    if (checkDigit1 !== parseInt(cpf.charAt(9))) return false;
+
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+        sum += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    let checkDigit2 = 11 - (sum % 11);
+    if (checkDigit2 >= 10) checkDigit2 = 0;
+    if (checkDigit2 !== parseInt(cpf.charAt(10))) return false;
+
+    return true;
+}
+
+
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 500);
@@ -70,7 +95,6 @@ const RegisterPage = () => {
     };
 
     const handleRegister = async () => {
-        setIsLoading(true);
 
         if (user.getName().trim() == '' || !(user.getName().trim().indexOf(' ') > -1)) {
             showToast("Por favor, insira um nome e sobrenome válido", "error");
@@ -96,6 +120,8 @@ const RegisterPage = () => {
             showToast("As senhas não coincidem", "error");
             return;
         }
+
+        setIsLoading(true);
 
         const payload = {
             username: user.getEmail(),
@@ -174,7 +200,11 @@ const RegisterPage = () => {
                                             unmask={true}
                                             placeholder="CPF"
                                             disabled={isLoading}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => validateInput(e.target.value, () => user.setCpf(e.target.value), setIsCpfValid, regexPatterns.cpfPattern)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const value = e.target.value;
+                                                user.setCpf(value);
+                                                setIsCpfValid(isValidCPF(value));
+                                            }}
                                         />
                                         {isCpfValid ? <DoneOutlineIcon color="success" /> : <Close color="error" />}
                                     </InputContainer>
