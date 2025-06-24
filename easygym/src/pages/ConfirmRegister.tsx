@@ -11,27 +11,20 @@ import { AuthApi } from '../api/AuthApi';
 
 const ConfirmedRegister = () => {
     const [searchParams] = useSearchParams();
-    const [isValid, setIsValid] = useState<boolean | null>(null);
-    console.log(isValid)
     let hasRun = false;
 
     useEffect(() => {
         const email = searchParams.get("email");
         if (!email) {
             showToast("Email não informado.", "error");
-            setIsValid(false);
             return;
         }
 
         if (!hasRun) {
             hasRun = true;
             AuthApi.resendEmail(email)
-                .then(() => {
-                    setIsValid(true);
-                })
                 .catch((err) => {
                     showToast(err.message || "Erro ao reenviar email.", "error");
-                    setIsValid(false);
                 });
         }
     }, [searchParams]);
