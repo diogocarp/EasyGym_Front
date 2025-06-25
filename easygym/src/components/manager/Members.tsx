@@ -10,7 +10,7 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { useTheme, useMediaQuery, Switch, FormControlLabel } from "@mui/material";
 import { MemberType, MembersApi } from "../../api/manager/MembersApi";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from 'react-toastify';
 
 import Cookies from 'js-cookie';
 
@@ -22,26 +22,9 @@ const Members = () => {
   const [cpf, setCPF] = useState("");
   
   const [students, setStudents] = useState<MemberType[]>([]);
-const [filteredStudents, setFilteredStudents] = useState<MemberType[]>([]);
+  const [filteredStudents, setFilteredStudents] = useState<MemberType[]>([]);
 
-const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
-
-useEffect(() => {
-  const delayDebounce = setTimeout(async () => {
-    try {
-      const filtered = await MembersApi.filterMembers(refreshToken, {
-        full_name__icontains: name,
-        customer_doc__icontains: cpf.replace(/[.-]/g, ""),
-        role: "MEMBER",
-      });
-      setFilteredStudents(filtered);
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao filtrar alunos");
-    }
-  }, 100); 
-  return () => clearTimeout(delayDebounce);
-}, [name, cpf]);
-
+  const refreshToken = Cookies.get("refreshToken") || sessionStorage.getItem("refreshToken") || "";
 
   const [editId, setEditId] = useState(-1);
   const [editName, setEditName] = useState("");
@@ -51,6 +34,38 @@ useEffect(() => {
   const [editCelular, setEditCelular] = useState("");
   const [editStatus, setEditStatus] = useState(true);
   const [openEditModal, setOpenEditModal] = useState(false);
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      try {
+        const filtered = await MembersApi.filterMembers(refreshToken, {
+          full_name__icontains: name,
+          customer_doc__icontains: cpf.replace(/[.-]/g, ""),
+          role: "MEMBER",
+        });
+        setFilteredStudents(filtered);
+      } catch (err: any) {
+        showToast(err.message || "Erro ao filtrar alunos", "error");
+      }
+    }, 100); 
+    return () => clearTimeout(delayDebounce);
+  }, [name, cpf]);
+
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info',
+    duration = 3000
+  ) => {
+    toast[type](message, {
+      position: "bottom-right",
+      autoClose: duration,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: type !== 'info',
+      draggable: true,
+      style: { backgroundColor: "#444", color: "white" },
+    });
+  };
 
   const handleEdit = (index: number) => {
     const student = filteredStudents[index];
@@ -80,9 +95,9 @@ useEffect(() => {
     const membersUpdated = await MembersApi.getMembers(refreshToken)
     setStudents(membersUpdated)    
     setOpenEditModal(false);
-    toast.success("Aluno atualizado com sucesso!");
+    showToast("Aluno atualizado com sucesso!", "success");
   } catch (err: any) {
-    toast.error(err.message || "Erro ao atualizar aluno");
+    showToast(err.message || "Erro ao atualizar aluno", "error");
   }
 };
 
@@ -185,6 +200,7 @@ useEffect(() => {
           </div>
         </Box>
       </Modal>
+      <ToastContainer />
     </div>
   );
 };

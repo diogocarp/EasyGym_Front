@@ -8,7 +8,7 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import { AttachMoney } from "@mui/icons-material";
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from 'react-toastify';
 import { Plan, PlansApi } from "../../api/manager/PlansApi";
 
 import Cookies from 'js-cookie';
@@ -36,10 +36,26 @@ const Plans = () => {
         const data = await PlansApi.getPlans();
         setPlans(data);
       } catch (err: any) {
-        toast.error(err.message || "Erro ao carregar planos");
+        showToast(err.message || "Erro ao carregar planos", "error");
       }
     })();
   }, []);
+  
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info',
+    duration = 3000
+  ) => {
+    toast[type](message, {
+      position: "bottom-right",
+      autoClose: duration,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: type !== 'info',
+      draggable: true,
+      style: { backgroundColor: "#444", color: "white" },
+    });
+  };
 
   const handleSave = async () => {
     try {
@@ -49,9 +65,9 @@ const Plans = () => {
       const updatedList = plans.map(p => p.id === updated.id ? updated : p);
       setPlans(updatedList);
       setOpen(false);
-      toast.success("Valor atualizado com sucesso!");
+      showToast("Valor atualizado com sucesso!", "success");
     } catch (err: any) {
-      toast.error(err.message || "Erro ao salvar alteração");
+      showToast(err.message || "Erro ao salvar alteração", "error");
     }
   };
 
@@ -132,6 +148,7 @@ const Plans = () => {
                 </div>
             </Box>
         </Modal>
+        <ToastContainer />
     </div>
   );
 };

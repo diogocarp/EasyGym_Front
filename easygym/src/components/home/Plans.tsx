@@ -28,10 +28,26 @@ const Plans = () => {
           const data = await PlansApi.getPlans();
           setPlans(data);
         } catch (err: any) {
-          toast.error(err.message || "Erro ao carregar planos");
+          showToast(err.message || "Erro ao carregar planos", "error");
         }
       })();
     }, []);
+    
+    const showToast = (
+      message: string,
+      type: 'success' | 'error' | 'info',
+      duration = 3000
+    ) => {
+      toast[type](message, {
+        position: "bottom-right",
+        autoClose: duration,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: type !== 'info',
+        draggable: true,
+        style: { backgroundColor: "#444", color: "white" },
+      });
+    };
 
     return (
         <PlansSection id="plans" style={{ flexDirection: isMobile ? "column" : "row", padding: isMobile ? "20px" : "20px 200px" }}>

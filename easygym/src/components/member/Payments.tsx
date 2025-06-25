@@ -38,7 +38,7 @@ import Cookies from 'js-cookie';
 const VENCIMENTOS_FIXOS = ["6", "15", "28"];
 const METODOS_PAGAMENTO = [
   { value: "credit", label: "Cartão de crédito" },
-  { value: "boleto", label: "Boleto bancário" },
+  { value: "bankslip", label: "Boleto bancário" },
   { value: "pix", label: "Pix" },
 ];
 

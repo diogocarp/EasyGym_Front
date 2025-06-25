@@ -16,7 +16,6 @@ const ConfirmedRegister = () => {
     useEffect(() => {
         const email = searchParams.get("email");
         if (!email) {
-            showToast("Email não informado.", "error");
             return;
         }
 

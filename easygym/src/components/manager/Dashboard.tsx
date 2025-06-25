@@ -20,7 +20,7 @@ import {
 
 import { DashboardApi, DashboardData } from "../../api/manager/DashboardApi";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from 'react-toastify';
 
 import Cookies from 'js-cookie';
 
@@ -59,12 +59,28 @@ const Dashboard = () => {
         const data = await DashboardApi.getMetrics(refreshToken, startDate, endDate);
         setDashboardData(data);
       } catch (err: any) {
-        toast.error(err.message || "Erro ao carregar dados do dashboard");
+        showToast(err.message || "Erro ao carregar dados do dashboard", "error");
       }
     };
 
     fetchData();
   }, [startDate, endDate]);
+  
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info',
+    duration = 3000
+  ) => {
+    toast[type](message, {
+      position: "bottom-right",
+      autoClose: duration,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: type !== 'info',
+      draggable: true,
+      style: { backgroundColor: "#444", color: "white" },
+    });
+  };
 
   const dataFreq = dashboardData ? [
     { name: "Ativos", value: dashboardData.frequency.active },
@@ -233,6 +249,7 @@ const Dashboard = () => {
           </div>
         </div>
       </Container>
+      <ToastContainer />
     </div>
   );
 };
